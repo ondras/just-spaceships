@@ -7,6 +7,7 @@ Ship.prototype.init = function(game) {
 	this._phys = {
 		mass: 1,
 		engine: 0,
+		torque: 0,
 		orientation: 0,
 		position: [this._size[0]/2, this._size[1]/2],
 		velocity: [0, 0] /* pixels per second */
@@ -16,6 +17,11 @@ Ship.prototype.init = function(game) {
 Ship.prototype.tick = function(dt) {
 	dt /= 1000;
 	var changed = false;
+
+	if (this._phys.torque) {
+		this._phys.orientation = (this._phys.orientation + this._phys.torque * dt / this._phys.mass).mod(360);
+		changed = true;
+	}
 	
 	for (var i=0;i<2;i++) {
 		/* engines add force => velocity */

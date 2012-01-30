@@ -3,13 +3,11 @@ Ship.Player.prototype.init = function(game) {
 	Ship.prototype.init.call(this, game);
 	
 	this._pressed = {};
-	this._deltaRotation = 0;
 	OZ.Event.add(window, "keydown", this._keydown.bind(this));
 	OZ.Event.add(window, "keyup", this._keyup.bind(this));
 }
 
 Ship.Player.prototype.tick = function(dt) {
-	this._phys.orientation = (this._phys.orientation + this._deltaRotation * dt / 1000).mod(360);
 	var visualChanged = Ship.prototype.tick.call(this, dt);
 	
 	var limit = 200;
@@ -40,10 +38,10 @@ Ship.Player.prototype._keydown = function(e) {
 	var amount = 360;
 	switch (e.keyCode) {
 		case 37:
-			this._deltaRotation -= amount;
+			this._phys.torque -= amount;
 		break;
 		case 39:
-			this._deltaRotation += amount;
+			this._phys.torque += amount;
 		break;
 		
 		case 38:
@@ -62,10 +60,10 @@ Ship.Player.prototype._keyup = function(e) {
 	var amount = 360;
 	switch (e.keyCode) {
 		case 37:
-			this._deltaRotation += amount;
+			this._phys.torque += amount;
 		break;
 		case 39:
-			this._deltaRotation -= amount;
+			this._phys.torque -= amount;
 		break;
 		
 		case 38:
