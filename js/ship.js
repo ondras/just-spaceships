@@ -1,9 +1,13 @@
 var Ship = OZ.Class().extend(HAF.Actor);
-Ship.prototype.init = function(game) {
+Ship.prototype.init = function(game, options) {
 	this._game = game;
+	this._options = {
+		color: "black"
+	};
+	for (var p in options) { this._options[p] = options[p]; }
+	
 	this._size = game.getSize();
 	this._pxPosition = [0, 0];
-	this._portPosition = [0, 0];
 	this._phys = {
 		mass: 1,
 		engine: 0,
@@ -12,6 +16,10 @@ Ship.prototype.init = function(game) {
 		position: [this._size[0]/2, this._size[1]/2],
 		velocity: [0, 0] /* pixels per second */
 	}
+	
+	this._mini = new Ship.Mini(game, this._options.color);
+
+	game.getEngine().addActor(this, "ships");
 }
 
 Ship.prototype.tick = function(dt) {
@@ -41,6 +49,8 @@ Ship.prototype.tick = function(dt) {
 		}
 		
 	}
+	
+	if (changed) { this._mini.setPosition(this._pxPosition); }
 
 	return changed;
 }
@@ -61,5 +71,6 @@ Ship.prototype.draw = function(context) {
 	context.lineTo(tmp[0] - 10*Math.cos(b), tmp[1] - 10*Math.sin(b));
 	
 	context.lineWidth = this._phys.mass;
+	context.strokeStyle = this._options.color;
 	context.stroke();
 }

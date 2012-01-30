@@ -5,6 +5,10 @@ Map.prototype.init = function(game, size) {
 	this._size = size;
 }
 
+Map.prototype.getSize = function() {
+	return this._size;
+}
+
 Map.prototype.draw = function(context) {
 	var port = this._game.getPort();
 	var offset = this._game.getOffset();
@@ -15,7 +19,6 @@ Map.prototype.draw = function(context) {
 
 	context.save();
 
-//	context.globalAlpha = 0.5;
 	context.translate(port[0] - w, port[1] - h);
 	
 	context.fillStyle = "#fff";
