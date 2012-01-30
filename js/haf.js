@@ -91,6 +91,7 @@ HAF.Engine.prototype.addCanvas = function(id) {
 	}
 	this._canvases[id] = obj;
 	this._container.appendChild(canvas);
+	return canvas;
 }
 
 HAF.Engine.prototype.addActor = function(actor, canvasId) {
@@ -111,6 +112,10 @@ HAF.Engine.prototype.removeActors = function(canvasId) {
 	var obj = this._canvases[canvasId];
 	obj.actors = [];
 	obj.dirty = true;
+}
+
+HAF.Engine.prototype.setDirty = function(canvasId) {
+	this._canvases[canvasId].dirty = true;
 }
 
 HAF.Engine.prototype.start = function() {
@@ -137,20 +142,25 @@ HAF.Engine.prototype._tick = function() {
 	var ts1 = Date.now();
 	var dt = ts1 - this._ts;
 	this._ts = ts1;
+	var allActors = 0;
+	var changedActors = 0;
 	
 	for (var id in this._canvases) { /* for all canvases */
 		var obj = this._canvases[id];
 		var dirty = obj.dirty;
 		var actors = obj.actors;
 		var i = actors.length;
+		allActors += i;
 		while (i--) { /* tick all actors, remember if any actor changed */
-			dirty = actors[i].tick(dt) || dirty;
+			var changed = actors[i].tick(dt);
+			if (changed) { changedActors++; }
+			dirty = changed || dirty;
 		}
 		obj.dirty = dirty;
 	}
 	
 	var ts2 = Date.now();
-	this.dispatch("tick", {time:ts2-ts1});
+	this.dispatch("tick", {time:ts2-ts1, all:allActors, changed:changedActors});
 }
 
 /**
@@ -245,7 +255,7 @@ HAF.FPS.prototype.init = function(engine) {
 	
 	OZ.DOM.append([
 		this._dom.container,
-		OZ.DOM.text("Total frames (sym/draw): "),
+		OZ.DOM.text("Total frames (sim/draw): "),
 		this._dom.frames.tick,
 		OZ.DOM.text("/"),
 		this._dom.frames.draw,
@@ -356,11 +366,16 @@ HAF.Monitor.prototype._start = function(e) {
 
 	this._dataTick = [];
 	this._dataFrame = [];
+	this._dataChanged = [];
 }
 
 HAF.Monitor.prototype._tick = function(e) {
 	this._dataTick.push(e.data.time);
-	if (this._dataTick.length > this._size[0]) { this._dataTick.shift(); }
+	this._dataChanged.push(e.data.changed/e.data.all);
+	if (this._dataTick.length > this._size[0]) { 
+		this._dataTick.shift(); 
+		this._dataChanged.shift(); 
+	}
 	this._draw();	
 }
 
@@ -375,9 +390,8 @@ HAF.Monitor.prototype._draw = function() {
 	
 	this._ctx.beginPath();
 	var i = this._dataTick.length;
-	var w = this._size[0]-1;
-	var h = this._size[1]-1;
-	this._ctx.moveTo(w, h);
+	var w = this._size[0];
+	var h = this._size[1]-0.5;
 	while (i--) {
 		this._ctx.lineTo(w--, h-this._dataTick[i]);
 	}
@@ -386,13 +400,22 @@ HAF.Monitor.prototype._draw = function() {
 
 	this._ctx.beginPath();
 	var i = this._dataFrame.length;
-	var w = this._size[0]-1;
-	var h = this._size[1]-1;
-	this._ctx.moveTo(w, h);
+	var w = this._size[0];
+	var h = this._size[1]-0.5;
 	while (i--) {
 		this._ctx.lineTo(w--, h-this._dataFrame[i]);
 	}
 	this._ctx.strokeStyle = "red";
+	this._ctx.stroke();
+
+	this._ctx.beginPath();
+	var i = this._dataChanged.length;
+	var w = this._size[0];
+	var h = this._size[1]-1;
+	while (i--) {
+		this._ctx.lineTo(w--, 0.5+Math.round(h*(1-this._dataChanged[i])));
+	}
+	this._ctx.strokeStyle = "green";
 	this._ctx.stroke();
 }
 

@@ -8,7 +8,7 @@ Ship.prototype.init = function(game) {
 		mass: 1,
 		engine: 0,
 		orientation: 0,
-		position: [300, 300],
+		position: [this._size[0]/2, this._size[1]/2],
 		velocity: [0, 0] /* pixels per second */
 	}
 }
@@ -19,8 +19,8 @@ Ship.prototype.tick = function(dt) {
 	
 	for (var i=0;i<2;i++) {
 		/* engines add force => velocity */
-		var force = (i ? Math.sin : Math.cos)(this._phys.orientation * Math.PI/180) * this._phys.engine / this._phys.mass;
-		this._phys.velocity[i] += force * dt;
+		var force = (i ? Math.sin : Math.cos)(this._phys.orientation * Math.PI/180) * this._phys.engine;
+		this._phys.velocity[i] += force * dt / this._phys.mass;
 		
 		/* drag => decay of velocity */ 
 		this._phys.velocity[i] -= this._phys.velocity[i] * Math.min(1, dt * 0.5 / this._phys.mass);
@@ -36,8 +36,7 @@ Ship.prototype.tick = function(dt) {
 		
 	}
 
-	if (A.length < 300) A.push([Date.now(), this._phys.position[0]]);
-	return true; /* FIXME */
+	return changed;
 }
 
 Ship.prototype.draw = function(context) {
@@ -54,5 +53,7 @@ Ship.prototype.draw = function(context) {
 	context.moveTo(tmp[0] + 10*Math.cos(b), tmp[1] + 10*Math.sin(b));
 	context.lineTo(tmp[0] + 10*Math.cos(a), tmp[1] + 10*Math.sin(a));
 	context.lineTo(tmp[0] - 10*Math.cos(b), tmp[1] - 10*Math.sin(b));
+	
+	context.lineWidth = this._phys.mass;
 	context.stroke();
 }

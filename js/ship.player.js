@@ -12,7 +12,7 @@ Ship.Player.prototype.tick = function(dt) {
 	this._phys.orientation = (this._phys.orientation + this._deltaRotation * dt / 1000).mod(360);
 	var visualChanged = Ship.prototype.tick.call(this, dt);
 	
-	var limit = 100;
+	var limit = 200;
 	var port = this._game.getPort();
 	var offset = this._game.getOffset();
 	

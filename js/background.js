@@ -2,22 +2,21 @@ var Background = OZ.Class().extend(HAF.Actor);
 
 Background.prototype.init = function(game) {
 	this._game = game;
-	this._size = game.getSize();
-}
-
-Background.prototype.tick = function() {
-	return true;
 }
 
 Background.prototype.draw = function(context) {
 	context.fillStyle = "#aaa";
+	var port = this._game.getPort();
 	var offset = this._game.getOffset();
-	for (var i=0;i<this._size[0];i+=100) {
-		for (var j=0;j<this._size[1];j+=100) {
-			context.beginPath();
-			context.moveTo((i - offset[0]).mod(this._size[0]), (j - offset[1]).mod(this._size[1]));
-			context.arc((i - offset[0]).mod(this._size[0]), (j - offset[1]).mod(this._size[1]), 10, 0, 2*Math.PI, true);
-			context.fill();
+	
+	var sx = Math.floor(offset[0]/100)*100;
+	var sy = Math.floor(offset[1]/100)*100;
+	var ex = Math.ceil((offset[0]+port[0])/100)*100;
+	var ey = Math.ceil((offset[1]+port[1])/100)*100;
+	
+	for (var i=sx;i<=ex;i+=100) {
+		for (var j=sy;j<=ey;j+=100) {
+			context.fillRect(i - offset[0], j - offset[1], 10, 10);
 		}
 	}
 }
