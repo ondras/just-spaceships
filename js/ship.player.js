@@ -35,7 +35,7 @@ Ship.Player.prototype._keydown = function(e) {
 	if (e.keyCode in this._pressed) { return; }
 	this._pressed[e.keyCode] = true;
 
-	var amount = 360;
+	var amount = 150;
 	switch (e.keyCode) {
 		case 37:
 			this._phys.torque -= amount;
@@ -57,7 +57,7 @@ Ship.Player.prototype._keydown = function(e) {
 Ship.Player.prototype._keyup = function(e) {
 	delete this._pressed[e.keyCode];
 	
-	var amount = 360;
+	var amount = 150;
 	switch (e.keyCode) {
 		case 37:
 			this._phys.torque += amount;
