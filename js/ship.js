@@ -1,17 +1,20 @@
-var Ship = OZ.Class().extend(HAF.Sprite);
+var Ship = OZ.Class().extend(HAF.AnimatedSprite);
 
 Ship.types = {
 	yellow: {
-		image: "Gaalian_Ranger_000",
-		color: "#cc0"
+		image: "Gaalian_Ranger_64",
+		color: "#cc0",
+		frames: 82
 	},
 	blue: {
-		image: "People_Ranger_000",
-		color: "#00f"
+		image: "People_Ranger_64",
+		color: "#00f",
+		frames: 99
 	},
 	red: {
-		image: "Maloc_Pirate_000",
-		color: "#f00"
+		image: "Maloc_Pirate_64",
+		color: "#f00",
+		frames: 99
 	}
 }
 
@@ -19,7 +22,7 @@ Ship.prototype.init = function(game, options) {
 	this._game = game;
 	this._options = {
 		type: "yellow",
-		size: [48, 48],
+		size: [64, 64],
 		maxForce: 500, /* pixels per weight per second^2 in vacuum */
 		maxTorque: 150 /* degrees per second */
 	};
@@ -27,8 +30,11 @@ Ship.prototype.init = function(game, options) {
 
 	var def = Ship.types[this._options.type];
 
-	var image = Game.Image.get(def.image, this._options.size);
-	HAF.Sprite.prototype.init.call(this, image, this._options.size);
+	var largeSize = [this._options.size[0], this._options.size[1]*def.frames];
+	var image = Game.Image.get(def.image, largeSize);
+	HAF.AnimatedSprite.prototype.init.call(this, image, this._options.size, def.frames);
+	
+	this._animation.fps = 10;
 
 	
 	this._size = game.getSize();
@@ -50,8 +56,9 @@ Ship.prototype.init = function(game, options) {
 }
 
 Ship.prototype.tick = function(dt) {
+	var changed = HAF.AnimatedSprite.prototype.tick.call(this, dt);
+
 	dt /= 1000;
-	var changed = false;
 
 	if (this._control.torque) {
 		this._phys.orientation = (this._phys.orientation + this._options.maxTorque * this._control.torque * dt / this._phys.mass).mod(360);
@@ -112,10 +119,17 @@ Ship.prototype.draw = function(context) {
 	context.translate(tmp[0], tmp[1]);
 	context.rotate(angle*Math.PI/180);
 	context.translate(-tmp[0], -tmp[1]);
-
+/*
 	context.drawImage(
 		this._sprite.image, 
 		tmp[0]-this._sprite.size[0]/2, tmp[1]-this._sprite.size[1]/2
+	);
+*/
+
+	context.drawImage(
+		this._sprite.image, 
+		0, this._animation.frame*this._sprite.size[1], this._sprite.size[0], this._sprite.size[1],
+		tmp[0]-this._sprite.size[0]/2, tmp[1]-this._sprite.size[1]/2, this._sprite.size[0], this._sprite.size[1]
 	);
 
 	context.restore();
