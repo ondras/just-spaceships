@@ -1,8 +1,6 @@
 Ship.Player = OZ.Class().extend(Ship);
 Ship.Player.prototype.init = function(game) {
 	Ship.prototype.init.call(this, game);
-	
-	this._pressed = {};
 	OZ.Event.add(window, "keydown", this._keydown.bind(this));
 	OZ.Event.add(window, "keyup", this._keyup.bind(this));
 }
@@ -16,7 +14,7 @@ Ship.Player.prototype.tick = function(dt) {
 	
 	var offsetChanged = false;
 	for (var i=0;i<2;i++) {
-		var portPosition = (this._pxPosition[i] - offset[i]).mod(this._size[i]);
+		var portPosition = (this._sprite.position[i] - offset[i]).mod(this._size[i]);
 
 		if (portPosition < limit) {
 			offsetChanged = true;
@@ -32,43 +30,34 @@ Ship.Player.prototype.tick = function(dt) {
 }
 
 Ship.Player.prototype._keydown = function(e) {
-	if (e.keyCode in this._pressed) { return; }
-	this._pressed[e.keyCode] = true;
-
-	var amount = 150;
 	switch (e.keyCode) {
 		case 37:
-			this._phys.torque -= amount;
+			this._control.torque = -1;
 		break;
 		case 39:
-			this._phys.torque += amount;
+			this._control.torque = 1;
 		break;
 		
 		case 38:
-			this._phys.engine = 300;
+			this._control.engine = 1;
 		break;
 		case 40:
-			this._phys.engine = -300;
+			this._control.engine = -1;
 		break;
 		
 	}
 }
 
 Ship.Player.prototype._keyup = function(e) {
-	delete this._pressed[e.keyCode];
-	
-	var amount = 150;
 	switch (e.keyCode) {
 		case 37:
-			this._phys.torque += amount;
-		break;
 		case 39:
-			this._phys.torque -= amount;
+			this._control.torque = 0;
 		break;
 		
 		case 38:
 		case 40:
-			this._phys.engine = 0;
+			this._control.engine = 0;
 		break;
 		
 	}

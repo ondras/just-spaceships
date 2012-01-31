@@ -7,11 +7,13 @@ Game.prototype.init = function() {
 	this._port = [0, 0];
 	this._offset = [0, 0];
 	this._size = [3000, 3000];
+	this._images = {};
 	
 	this._engine = new HAF.Engine(this._port);
+	document.body.appendChild(this._engine.getContainer());
 	this._engine.addCanvas("bg");
 	this._engine.addCanvas("ships");
-	this._engine.addCanvas("map").style.opacity = 0.5;
+	this._engine.addCanvas("map").style.opacity = 0.75;
 	
 	this._resize();
 	
@@ -25,12 +27,12 @@ Game.prototype.init = function() {
 	this._engine.addActor(new Ship.Player(this), "ships");
 
 	var ai = new Ship(this, {color:"red"});
-	ai._phys.engine = 100;
+	ai._control.engine = 0.5;
 	ai._phys.position[1] += -200;
 	
 	var ai = new Ship(this, {color:"blue"});
 	ai._phys.mass = 2;
-	ai._phys.engine = 100;
+	ai._control.engine = 0.5;
 	ai._phys.position[1] += 200;
 
 	/* */
@@ -46,7 +48,6 @@ Game.prototype.init = function() {
 	document.body.appendChild(monitor);
 	/* */
 	
-	document.body.appendChild(this._engine.getContainer());
 	this._engine.start();
 	
 	OZ.Event.add(window, "resize", this._resize.bind(this));

@@ -31,7 +31,7 @@ Ship.Mini.prototype.draw = function(context) {
 	}
 	
 	context.fillStyle = this._color;
-	context.fillRect(pos[0]-2, pos[1]-2, 4, 4);
+	context.fillRect(pos[0]-1, pos[1]-1, 3, 3);
 	
 	this._dirty = false;
 }
