@@ -26,11 +26,11 @@ Game.prototype.init = function() {
 	this._engine.addActor(new Background(this), "bg");
 	this._engine.addActor(new Ship.Player(this), "ships");
 
-	var ai = new Ship(this, {color:"red"});
+	var ai = new Ship(this, {type:"red"});
 	ai._control.engine = 0.5;
 	ai._phys.position[1] += -200;
 	
-	var ai = new Ship(this, {color:"blue"});
+	var ai = new Ship(this, {type:"blue"});
 	ai._phys.mass = 2;
 	ai._control.engine = 0.5;
 	ai._phys.position[1] += 200;

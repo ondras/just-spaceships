@@ -1,16 +1,35 @@
 var Ship = OZ.Class().extend(HAF.Sprite);
+
+Ship.types = {
+	yellow: {
+		image: "Gaalian_Ranger_000",
+		color: "#cc0"
+	},
+	blue: {
+		image: "People_Ranger_000",
+		color: "#00f"
+	},
+	red: {
+		image: "Maloc_Pirate_000",
+		color: "#f00"
+	}
+}
+
 Ship.prototype.init = function(game, options) {
-	var size = [64, 64];
-	HAF.Sprite.prototype.init.call(this, Game.Image.get("Gaalian_Ranger_000", size), size);
-	
 	this._game = game;
 	this._options = {
-		color: "black",
-		maxForce: 300, /* pixels per second in vacuum */
+		type: "yellow",
+		size: [48, 48],
+		maxForce: 300, /* pixels per weight per second^2 in vacuum */
 		maxTorque: 150 /* degrees per second */
 	};
-	
 	for (var p in options) { this._options[p] = options[p]; }
+
+	var def = Ship.types[this._options.type];
+
+	var image = Game.Image.get(def.image, this._options.size);
+	HAF.Sprite.prototype.init.call(this, image, this._options.size);
+
 	
 	this._size = game.getSize();
 
@@ -26,7 +45,7 @@ Ship.prototype.init = function(game, options) {
 		velocity: [0, 0] /* pixels per second */
 	}
 	
-	this._mini = new Ship.Mini(game, this._options.color);
+	this._mini = new Ship.Mini(game, def.color);
 	game.getEngine().addActor(this, "ships");
 }
 
