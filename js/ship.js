@@ -20,7 +20,7 @@ Ship.prototype.init = function(game, options) {
 	this._options = {
 		type: "yellow",
 		size: [48, 48],
-		maxForce: 300, /* pixels per weight per second^2 in vacuum */
+		maxForce: 500, /* pixels per weight per second^2 in vacuum */
 		maxTorque: 150 /* degrees per second */
 	};
 	for (var p in options) { this._options[p] = options[p]; }

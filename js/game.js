@@ -24,7 +24,7 @@ Game.prototype.init = function() {
 	this._engine.addActor(this._map, "map");
 
 	this._engine.addActor(new Background(this), "bg");
-	this._engine.addActor(new Ship.Player(this), "ships");
+	new Ship.Player(this)
 
 	var ai = new Ship(this, {type:"red"});
 	ai._control.engine = 0.5;
