@@ -3,6 +3,8 @@ Ship.Player.prototype.init = function(game) {
 	Ship.prototype.init.call(this, game);
 	OZ.Event.add(window, "keydown", this._keydown.bind(this));
 	OZ.Event.add(window, "keyup", this._keyup.bind(this));
+	
+	this._tmp = 0;
 }
 
 Ship.Player.prototype.tick = function(dt) {
@@ -32,9 +34,14 @@ Ship.Player.prototype.tick = function(dt) {
 Ship.Player.prototype._keydown = function(e) {
 	switch (e.keyCode) {
 		case 17:
+			this._tmp = (this._tmp+1)%2;
+			var angle = (this._tmp ? -1 : 1) * Math.PI/2;
+			angle += this._phys.orientation*Math.PI/180;
+			var dist = 15;
+			
 			var pos = [
-				this._phys.position[0],
-				this._phys.position[1]
+				this._phys.position[0] + dist * Math.cos(angle),
+				this._phys.position[1] + dist * Math.sin(angle)
 			];
 			var vel = [
 				this._phys.velocity[0],

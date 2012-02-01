@@ -13,7 +13,8 @@ Explosion.prototype.init = function(game, position) {
 	this._sprite.position = position;
 	this._animation.fps = 20;
 	
-	this._game.getEngine().addActor(this, "fx"); /* FIXME ships? */
+	this._game.getEngine().addActor(this, "fx");
+	Game.Audio.play("explosion");
 }
 
 Explosion.prototype.tick = function(dt) {

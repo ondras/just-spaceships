@@ -57,13 +57,8 @@ Game.prototype.init = function() {
 	
 	OZ.Event.add(window, "resize", this._resize.bind(this));
 	
-	if (window.Audio) {
-		var bg = new Audio();
-		var ext = (bg.canPlayType("audio/ogg") ? "ogg" : "mp3");
-		bg.src = "sfx/neointro." + ext;
-		bg.play();
-	}
-	
+	Game.Audio.play("neointro");
+		
 	OZ.Event.add(null, "ship-death", this._shipDeath.bind(this));
 }
 
