@@ -35,9 +35,9 @@ Ship.Player.prototype._keydown = function(e) {
 	switch (e.keyCode) {
 		case 17:
 			this._tmp = (this._tmp+1)%2;
-			var angle = (this._tmp ? -1 : 1) * Math.PI/2;
+			var angle = (this._tmp ? -1 : 1) * Math.PI/4;
 			angle += this._phys.orientation;
-			var dist = 15;
+			var dist = 25;
 			
 			var pos = [
 				this._phys.position[0] + dist * Math.cos(angle),
