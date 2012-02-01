@@ -28,8 +28,8 @@ Weapon.prototype.getDamage = function() {
 Weapon.prototype.fire = function(position, orientation, velocity) {
 	var k = 0.5;
 	var v = [
-		k*velocity[0] + this._speed * Math.cos(orientation*Math.PI/180),
-		k*velocity[1] + this._speed * Math.sin(orientation*Math.PI/180)
+		k*velocity[0] + this._speed * Math.cos(orientation),
+		k*velocity[1] + this._speed * Math.sin(orientation)
 	];
 	
 	new Weapon.Projectile(this._game, this, position, v);

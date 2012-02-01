@@ -36,7 +36,7 @@ Ship.Player.prototype._keydown = function(e) {
 		case 17:
 			this._tmp = (this._tmp+1)%2;
 			var angle = (this._tmp ? -1 : 1) * Math.PI/2;
-			angle += this._phys.orientation*Math.PI/180;
+			angle += this._phys.orientation;
 			var dist = 15;
 			
 			var pos = [

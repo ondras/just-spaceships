@@ -5,14 +5,16 @@ Weapon.Projectile.prototype.init = function(game, weapon, position, velocity) {
 	this._weapon = weapon;
 	this._distance = 0;
 	
-	var size = [106, 106];
-	var image = Game.Image.get("plasma3", size);
-	HAF.Sprite.prototype.init.call(this, image, size);
-	
 	this._phys = {
 		position: position,
 		velocity: velocity
 	}
+
+	var size = [106, 106];
+	var angle = Math.PI/2 + Math.atan2(this._phys.velocity[1], this._phys.velocity[0]);
+	
+	var image = HAF.Sprite.get("img/plasma3.png", size, angle, false);
+	HAF.Sprite.prototype.init.call(this, image, size);
 	
 	this._game.getEngine().addActor(this, "fx");
 }
@@ -64,15 +66,5 @@ Weapon.Projectile.prototype.draw = function(context) {
 		tmp[i] = (this._sprite.position[i] - offset[i]).mod(this._size[i]);
 	}
 	
-	/* FIXME predpocitat natoceni */
-	var angle = Math.atan2(this._phys.velocity[1], this._phys.velocity[0]);
-	
-	context.save();
-	context.translate(tmp[0], tmp[1]);
-	context.rotate(angle + Math.PI/2);
-	context.translate(-tmp[0], -tmp[1]);
-	
 	context.drawImage(this._sprite.image, tmp[0]-this._sprite.size[0]/2, tmp[1]-this._sprite.size[1]/2);
-	
-	context.restore();
 }

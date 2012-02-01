@@ -453,6 +453,55 @@ HAF.Sprite.prototype._getSourceImagePosition = function() {
 }
 
 /**
+ * Static image builder
+ */
+HAF.Sprite._cache = {};
+HAF.Sprite.get = function(url, size, rotation, cache) {
+	var item = null;
+	var key = size.join(",") + "," + (rotation % 360) + "," + (cache ? 1 : 0);
+	
+	var render = function(key) {
+		var canvas = item.versions[key];
+		var context = canvas.getContext("2d");
+		var parts = key.split(",");
+		var angle = parseFloat(parts[2]);
+		
+		if (angle) { /* add rotation if requested */
+			context.translate(canvas.width/2, canvas.height/2);
+			context.rotate(angle);
+			context.translate(-canvas.width/2, -canvas.height/2);
+		}
+		
+		context.drawImage(item.img, 0, 0, canvas.width, canvas.height);
+		if (parts[3] == "0") { delete item.versions[key]; } /* not to be cached */
+		return canvas;
+	}
+
+	if (!this._cache[url]) { /* image not ready yet */
+		item = {
+			img: OZ.DOM.elm("img", {src:url}),
+			event: null,
+			versions: {}
+		}
+		item.event = OZ.Event.add(item.img, "load", function(e) {
+			OZ.Event.remove(item.event);
+			item.event = null;
+			for (var p in item.versions) { render(p); }
+		});
+		this._cache[url] = item;
+	} else { /* this image was already requested */
+		item = this._cache[url];
+	}
+	
+	if (item.versions[key]) { return item.versions[key]; } /* we already have this */
+	
+	item.versions[key] = OZ.DOM.elm("canvas", {width:size[0], height:size[1]});
+	if (!item.event) { return render(key); } /* image loaded, render & return */
+
+	return item.versions[key]; /* not loaded yet, wait please */
+}
+
+/**
  * Animated image sprite, consists of several frames
  */
 HAF.AnimatedSprite = OZ.Class().extend(HAF.Sprite);

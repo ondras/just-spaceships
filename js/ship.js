@@ -24,14 +24,14 @@ Ship.prototype.init = function(game, options) {
 		type: "yellow",
 		size: [64, 64],
 		maxForce: 500, /* pixels per weight per second^2 in vacuum */
-		maxTorque: 150 /* degrees per second */
+		maxTorque: 150 * Math.PI/180 /* degrees per second */
 	};
 	for (var p in options) { this._options[p] = options[p]; }
 
 	var def = Ship.types[this._options.type];
 
 	var largeSize = [this._options.size[0], this._options.size[1]*def.frames];
-	var image = Game.Image.get(def.image, largeSize);
+	var image = HAF.Sprite.get("img/"+def.image+".png", largeSize, 0, true);
 	HAF.AnimatedSprite.prototype.init.call(this, image, this._options.size, def.frames);
 	
 	this._animation.fps = 10;
@@ -63,14 +63,14 @@ Ship.prototype.tick = function(dt) {
 	dt /= 1000;
 
 	if (this._control.torque) {
-		this._phys.orientation = (this._phys.orientation + this._options.maxTorque * this._control.torque * dt / this._phys.mass).mod(360);
+		this._phys.orientation = (this._phys.orientation + this._options.maxTorque * this._control.torque * dt / this._phys.mass).mod(2*Math.PI);
 		changed = true;
 	}
 	
 	for (var i=0;i<2;i++) {
 		if (this._control.engine) { /* engines add force => velocity */
 			var force = (this._control.engine > 0 ? 1 : 0.5) * this._options.maxForce * this._control.engine;
-			force *= (i ? Math.sin : Math.cos)(this._phys.orientation * Math.PI/180);
+			force *= (i ? Math.sin : Math.cos)(this._phys.orientation);
 			this._phys.velocity[i] += force * dt / this._phys.mass;
 		}
 		
@@ -110,8 +110,8 @@ Ship.prototype.draw = function(context) {
 	}
 
 /*
-	var a = this._phys.orientation * Math.PI /180; 
-	var b = (this._phys.orientation + 90) * Math.PI /180; 
+	var a = this._phys.orientation; 
+	var b = (this._phys.orientation + Math.PI/2); 
 	context.beginPath();
 	
 	context.moveTo(tmp[0] + 10*Math.cos(b), tmp[1] + 10*Math.sin(b));
@@ -123,12 +123,12 @@ Ship.prototype.draw = function(context) {
 	context.stroke();
 */
 
-	var angle = 90 + this._phys.orientation;
+	var angle = Math.PI/2 + this._phys.orientation;
 
 	context.save();
 	
 	context.translate(tmp[0], tmp[1]);
-	context.rotate(angle*Math.PI/180);
+	context.rotate(angle);
 	context.translate(-tmp[0], -tmp[1]);
 /*
 	context.drawImage(

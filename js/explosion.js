@@ -7,7 +7,7 @@ Explosion.prototype.init = function(game, position) {
 	var size = [128, 128];
 	this._frames = 72;
 	var largeSize = [size[0], size[1]*this._frames];
-	var image = Game.Image.get("explosion_128", largeSize);
+	var image = HAF.Sprite.get("img/explosion_128.png", largeSize, 0, true);
 	
 	HAF.AnimatedSprite.prototype.init.call(this, image, size, Infinity); /* remove when reached >= this._frames */
 	this._sprite.position = position;
