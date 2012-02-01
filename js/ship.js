@@ -36,8 +36,9 @@ Ship.prototype.init = function(game, options) {
 	
 	this._animation.fps = 10;
 
-	this._weapon = new Weapon(this._game);	
+	this._weapon = new Weapon(this._game, this);	
 	this._size = game.getSize();
+	this._alive = true;
 
 	this._control = {
 		engine: 0,
@@ -57,6 +58,7 @@ Ship.prototype.init = function(game, options) {
 
 Ship.prototype.tick = function(dt) {
 	var changed = HAF.AnimatedSprite.prototype.tick.call(this, dt);
+	if (!this._alive) { return changed; } /* FIXME */
 
 	dt /= 1000;
 
@@ -143,3 +145,30 @@ Ship.prototype.draw = function(context) {
 
 	context.restore();
 }
+
+Ship.prototype.collidesWith = function(position) {
+	var dx = position[0]-this._phys.position[0];
+	var dy = position[1]-this._phys.position[1];
+	var r = this._sprite.size[0]/2; /* FIXME cachovat */
+	return (dx*dx+dy*dy < r*r);
+}
+
+Ship.prototype.damage = function(weapon) {
+	var amount = weapon.getDamage();
+	/* FIXME hitpoints */
+	
+	this.die();
+}
+
+Ship.prototype.die = function() {
+	this._alive = false;
+	this._mini.die();
+	this.dispatch("ship-death");
+	new Explosion(this._game, this._sprite.position);
+	
+	/* FIXME!! */
+	setTimeout(function() {
+		this._game.getEngine().removeActor(this, "ships");
+	}.bind(this), 1000);
+}
+

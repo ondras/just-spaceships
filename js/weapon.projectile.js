@@ -14,7 +14,7 @@ Weapon.Projectile.prototype.init = function(game, weapon, position, velocity) {
 		velocity: velocity
 	}
 	
-	this._game.getEngine().addActor(this, "ships"); /* fixme ships? */
+	this._game.getEngine().addActor(this, "fx");
 }
 
 Weapon.Projectile.prototype.tick = function(dt) {
@@ -35,8 +35,21 @@ Weapon.Projectile.prototype.tick = function(dt) {
 	
 	this._distance += Math.sqrt(dist);
 	if (this._distance >= this._weapon.getRange()) {
-		this._game.getEngine().removeActor(this, "ships");
+		this._game.getEngine().removeActor(this, "fx");
 		changed = true;
+	} else { /* check targets */
+		var thisShip = this._weapon.getShip();
+		var ships = this._game.getShips();
+		for (var i=0;i<ships.length;i++) {
+			var ship = ships[i];
+			if (ship == thisShip) { continue; }
+			if (ship.collidesWith(this._phys.position)) {
+				ship.damage(this._weapon);
+				this._game.getEngine().removeActor(this, "fx");
+				changed = true;
+				break;
+			}
+		}
 	}
 	
 	return changed;

@@ -15,6 +15,7 @@ Game.prototype.init = function() {
 	this._engine.addCanvas("bg");
 	this._engine.addCanvas("ships");
 	this._engine.addCanvas("map").style.opacity = 0.75;
+	this._engine.addCanvas("fx");
 	
 	this._resize();
 	
@@ -63,6 +64,7 @@ Game.prototype.init = function() {
 		bg.play();
 	}
 	
+	OZ.Event.add(null, "ship-death", this._shipDeath.bind(this));
 }
 
 Game.prototype.getEngine = function() {
@@ -104,4 +106,9 @@ Game.prototype._resize = function() {
 		this._port[i] = Math.min(win[i], this._size[i]);
 	}
 	this._engine.setSize(this._port);
+}
+
+Game.prototype._shipDeath = function(e) {
+	var index = this._ships.indexOf(e.target);
+	this._ships.splice(index, 1);
 }

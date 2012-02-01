@@ -35,3 +35,7 @@ Ship.Mini.prototype.draw = function(context) {
 	
 	this._dirty = false;
 }
+
+Ship.Mini.prototype.die = function() {
+	this._game.getEngine().removeActor(this, "map");
+}
