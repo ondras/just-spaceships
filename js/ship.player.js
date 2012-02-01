@@ -31,6 +31,13 @@ Ship.Player.prototype.tick = function(dt) {
 
 Ship.Player.prototype._keydown = function(e) {
 	switch (e.keyCode) {
+		case 17:
+			var pos = [
+				this._phys.position[0],
+				this._phys.position[1]
+			]
+			this._weapon.fire(pos, this._phys.orientation);
+		break;
 		case 37:
 			this._control.torque = -1;
 		break;

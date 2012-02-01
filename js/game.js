@@ -8,6 +8,7 @@ Game.prototype.init = function() {
 	this._offset = [0, 0];
 	this._size = [3000, 3000];
 	this._images = {};
+	this._ships = [];
 	
 	this._engine = new HAF.Engine(this._port);
 	document.body.appendChild(this._engine.getContainer());
@@ -24,13 +25,15 @@ Game.prototype.init = function() {
 	this._engine.addActor(this._map, "map");
 
 	this._engine.addActor(new Background(this), "bg");
-	new Ship.Player(this)
+	this._ships.push(new Ship.Player(this));
 
 	var ai = new Ship(this, {type:"red"});
+	this._ships.push(ai);
 	ai._control.engine = 0.5;
 	ai._phys.position[1] += -200;
 	
 	var ai = new Ship(this, {type:"blue"});
+	this._ships.push(ai);
 	ai._phys.mass = 2;
 	ai._control.engine = 0.5;
 	ai._phys.position[1] += 200;
@@ -41,6 +44,7 @@ Game.prototype.init = function() {
 	fps.style.position = "absolute";
 	fps.style.left = "0px";
 	fps.style.top = "0px";
+	fps.style.color = "#999";
 	document.body.appendChild(fps);
 	monitor.style.position = "absolute";
 	monitor.style.left = "0px";
@@ -51,6 +55,14 @@ Game.prototype.init = function() {
 	this._engine.start();
 	
 	OZ.Event.add(window, "resize", this._resize.bind(this));
+	
+	if (window.Audio) {
+		var bg = new Audio();
+		var ext = (bg.canPlayType("audio/ogg") ? "ogg" : "mp3");
+		bg.src = "sfx/neointro." + ext;
+		bg.play();
+	}
+	
 }
 
 Game.prototype.getEngine = function() {
@@ -80,6 +92,10 @@ Game.prototype.setOffset = function(offset) {
 	this._engine.setDirty("ships");
 	this._engine.setDirty("map");
 	return this._offset;
+}
+
+Game.prototype.getShips = function() {
+	return this._ships;
 }
 
 Game.prototype._resize = function() {

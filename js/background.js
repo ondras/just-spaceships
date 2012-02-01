@@ -21,7 +21,10 @@ Background.prototype.draw = function(context) {
 	}
 */
 
-	context.strokeStyle = "#ccc";
+	context.fillStyle = "#000";
+	context.fillRect(0, 0, port[0], port[1]);
+
+	context.strokeStyle = "#333";
 	context.beginPath();
 	for (var i=sx;i<=ex;i+=100) { /* vertical lines */	
 		context.moveTo(i-offset[0]+.5, sy-offset[1]);

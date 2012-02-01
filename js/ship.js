@@ -36,7 +36,7 @@ Ship.prototype.init = function(game, options) {
 	
 	this._animation.fps = 10;
 
-	
+	this._weapon = new Weapon(this._game);	
 	this._size = game.getSize();
 
 	this._control = {
@@ -70,7 +70,7 @@ Ship.prototype.tick = function(dt) {
 			var force = (this._control.engine > 0 ? 1 : 0.5) * this._options.maxForce * this._control.engine;
 			force *= (i ? Math.sin : Math.cos)(this._phys.orientation * Math.PI/180);
 			this._phys.velocity[i] += force * dt / this._phys.mass;
-		} 
+		}
 		
 		/* drag => decay of velocity */ 
 		this._phys.velocity[i] -= this._phys.velocity[i] * Math.min(1, dt * 0.5 / this._phys.mass);
@@ -86,12 +86,21 @@ Ship.prototype.tick = function(dt) {
 		
 	}
 	
+	if (!this._control.engine) { /* too slow => stop */
+		var v = this._phys.velocity;
+		if (v[0]*v[0] + v[1]*v[1] < 50) { 
+			this._phys.velocity[0] = 0;
+			this._phys.velocity[1] = 0;
+		}
+	}
+	
 	if (changed) { this._mini.setPosition(this._sprite.position); }
 
 	return changed;
 }
 
 Ship.prototype.draw = function(context) {
+	/* FIXME ne kdyz neni v portu */
 	var offset = this._game.getOffset();
 	var tmp = [0, 0];
 	for (var i=0;i<2;i++) {
