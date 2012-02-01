@@ -102,26 +102,13 @@ Ship.prototype.tick = function(dt) {
 }
 
 Ship.prototype.draw = function(context) {
-	/* FIXME ne kdyz neni v portu */
+	if (!this._game.inPort(this._sprite.position, 100)) { if (this instanceof Ship.Player) alert("a"); return; } /* do not draw outside of port */
+		
 	var offset = this._game.getOffset();
 	var tmp = [0, 0];
 	for (var i=0;i<2;i++) {
 		tmp[i] = (this._sprite.position[i] - offset[i]).mod(this._size[i]);
 	}
-
-/*
-	var a = this._phys.orientation; 
-	var b = (this._phys.orientation + Math.PI/2); 
-	context.beginPath();
-	
-	context.moveTo(tmp[0] + 10*Math.cos(b), tmp[1] + 10*Math.sin(b));
-	context.lineTo(tmp[0] + 10*Math.cos(a), tmp[1] + 10*Math.sin(a));
-	context.lineTo(tmp[0] - 10*Math.cos(b), tmp[1] - 10*Math.sin(b));
-	
-	context.lineWidth = this._phys.mass;
-	context.strokeStyle = this._options.color;
-	context.stroke();
-*/
 
 	var angle = Math.PI/2 + this._phys.orientation;
 
@@ -130,12 +117,6 @@ Ship.prototype.draw = function(context) {
 	context.translate(tmp[0], tmp[1]);
 	context.rotate(angle);
 	context.translate(-tmp[0], -tmp[1]);
-/*
-	context.drawImage(
-		this._sprite.image, 
-		tmp[0]-this._sprite.size[0]/2, tmp[1]-this._sprite.size[1]/2
-	);
-*/
 
 	context.drawImage(
 		this._sprite.image, 
@@ -149,7 +130,7 @@ Ship.prototype.draw = function(context) {
 Ship.prototype.collidesWith = function(position) {
 	var dx = position[0]-this._phys.position[0];
 	var dy = position[1]-this._phys.position[1];
-	var r = this._sprite.size[0]/2; /* FIXME cachovat */
+	var r = this._sprite.size[0]/3; /* FIXME cachovat? */
 	return (dx*dx+dy*dy < r*r);
 }
 

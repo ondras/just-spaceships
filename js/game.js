@@ -95,6 +95,32 @@ Game.prototype.getShips = function() {
 	return this._ships;
 }
 
+/**
+ * Detect if given coordinates are within a certain distance from the viewport
+ */
+Game.prototype.inPort = function(coords, distance) {
+	for (var i=0;i<2;i++) {
+		var first = this._offset[i];
+		var second = (this._offset[i] + this._port[i]).mod(this._size[i]);
+
+		if (first < second) { /* normal port position */
+			if (
+				(coords[i] + distance).mod(this._size[i]) < first
+				||
+				(coords[i] - distance).mod(this._size[i]) > second
+			) { return false; } 
+		} else { /* wrapped port */
+			if (
+				(coords[i] - distance).mod(this._size[i]) < first
+				&&
+				(coords[i] + distance).mod(this._size[i]) > second
+			) { return false; } 
+		}
+	}
+	
+	return true;
+}
+
 Game.prototype._resize = function() {
 	var win = OZ.DOM.win();
 	for (var i=0;i<win.length;i++) {

@@ -58,7 +58,7 @@ Weapon.Projectile.prototype.tick = function(dt) {
 }
 
 Weapon.Projectile.prototype.draw = function(context) {
-	/* FIXME ne kdyz neni v portu */
+	if (!this._game.inPort(this._sprite.position, 100)) { return; } /* do not draw outside of port */
 
 	var offset = this._game.getOffset();
 	var tmp = [0, 0];
