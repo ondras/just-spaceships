@@ -1,19 +1,17 @@
 Weapon.Projectile = OZ.Class().extend(HAF.Sprite);
-Weapon.Projectile.prototype.init = function(game, weapon, position, orientation) {
+Weapon.Projectile.prototype.init = function(game, weapon, position, velocity) {
 	this._game = game;
 	this._size = game.getSize();
 	this._weapon = weapon;
 	this._distance = 0;
 	
-	var size = [96, 96];
-	var image = Game.Image.get("plasma", size);
+	var size = [106, 106];
+	var image = Game.Image.get("plasma3", size);
 	HAF.Sprite.prototype.init.call(this, image, size);
 	
-	var speed = weapon.getSpeed();
-	var angle = orientation*Math.PI/180;
 	this._phys = {
 		position: position,
-		velocity: [Math.cos(angle)*speed, Math.sin(angle)*speed]
+		velocity: velocity
 	}
 	
 	this._game.getEngine().addActor(this, "ships"); /* fixme ships? */

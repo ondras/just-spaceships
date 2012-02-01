@@ -35,8 +35,12 @@ Ship.Player.prototype._keydown = function(e) {
 			var pos = [
 				this._phys.position[0],
 				this._phys.position[1]
+			];
+			var vel = [
+				this._phys.velocity[0],
+				this._phys.velocity[1]
 			]
-			this._weapon.fire(pos, this._phys.orientation);
+			this._weapon.fire(pos, this._phys.orientation, vel);
 		break;
 		case 37:
 			this._control.torque = -1;
