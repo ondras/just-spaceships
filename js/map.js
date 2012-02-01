@@ -30,18 +30,17 @@ Map.prototype.draw = function(context) {
 	context.fillStyle = "#000";
 	context.fillRect(0, 0, w, h);
 	
-	var scale = [0, 0];
 	var lt = [0, 0];
 	var rb = [0, 0];
 	var mid1 = [0, 0];
 	var mid2 = [0, 0];
 	
 	for (var i=0;i<2;i++) {
-		scale[i] = this._size[i]/size[i];
-		lt[i] = offset[i]*scale[i];
-		rb[i] = (offset[i]+port[i]).mod(size[i])*scale[i];
-		mid1[i] = (lt[i] < rb[i] ? (lt[i]+rb[i]+1)/2 : size[i]*scale[i]);
-		mid2[i] = (lt[i] < rb[i] ? (lt[i]+rb[i]-1)/2 : 0);
+		var scale = this._size[i]/size[i]; 
+		lt[i] = Math.round(offset[i]*scale);
+		rb[i] = Math.round((offset[i]+port[i]).mod(size[i])*scale);
+		mid1[i] = Math.round(lt[i] < rb[i] ? (lt[i]+rb[i])/2 : size[i]*scale);
+		mid2[i] = Math.round(lt[i] < rb[i] ? (lt[i]+rb[i])/2 : 0);
 	}
 	
 	context.fillStyle = "#888";
