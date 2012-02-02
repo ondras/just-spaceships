@@ -66,6 +66,7 @@ Ship.prototype.init = function(game, options) {
 		position: [this._size[0]/2, this._size[1]/2],
 		velocity: [0, 0] /* pixels per second */
 	}
+	this._hp = Math.round(this._phys.mass * 1000);
 	
 	this._pilot = new Pilot.AI("", this);
 	this._mini = new Ship.Mini(game, def.color);
@@ -148,13 +149,17 @@ Ship.prototype.collidesWith = function(position) {
 
 Ship.prototype.damage = function(weapon) {
 	var amount = weapon.getDamage();
+	this._hp -= amount;
 	
 	var labelPos = this._sprite.position.clone();
 	labelPos[1] -= this._sprite.size[1]/2;
 	new Label(this._game, "-" + amount, labelPos);
-	/* FIXME hitpoints */
 	
-	//this.die();
+	if (this._hp <= 0) {
+		this.die();
+		var labelPos = this._sprite.position.clone();
+		new Label(this._game, this._pilot.getName() + " killed by " + weapon.getShip().getPilot().getName(), labelPos, {size:30});
+	}
 }
 
 Ship.prototype.die = function() {

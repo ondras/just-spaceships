@@ -17,7 +17,7 @@ Weapon.prototype.getShip = function() {
 }
 
 Weapon.prototype.getDamage = function() {
-	return 1;
+	return 50;
 }
 
 Weapon.prototype.isReady = function() {

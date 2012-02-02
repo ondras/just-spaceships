@@ -50,7 +50,7 @@ Game.prototype.init = function() {
 //	ai._control.engine = 0.5;
 	ai._phys.position[1] += -200;
 	ai.getPilot().setTarget(player);
-	
+/*	
 	var ai = new Ship(this, {type:"green"});
 	this._ships.push(ai);
 	ai._phys.mass = 2;
@@ -72,7 +72,7 @@ Game.prototype.init = function() {
 	ai._phys.mass = 2;
 	ai._phys.orientation = Math.PI/8;
 	ai.getPilot().setTarget(player);
-
+*/
 	/* */
 	var fps = new HAF.FPS(this._engine).getContainer();
 	var monitor = new HAF.Monitor(this._engine, [200, 100]).getContainer();
