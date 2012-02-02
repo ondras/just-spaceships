@@ -2,6 +2,22 @@ Number.prototype.mod = function(n) {
 	return ((this%n)+n)%n;
 }
 
+/**
+ * If this number represents an angle; what is its difference to another angle?
+ */
+Number.prototype.angleDiff = function(target) {
+	var diff = target - this;
+	if (Math.abs(diff) > Math.PI) { diff += (diff < 0 ? 1 : -1) * 2 * Math.PI; }
+	return diff;
+}
+
+Array.prototype.clone = function() {
+	var c = [];
+	var len = this.length;
+	for (var i=0;i<len;i++) { c.push(this[i]); }
+	return c;
+}
+
 var Game = OZ.Class();
 Game.prototype.init = function() {
 	this._port = [0, 0];

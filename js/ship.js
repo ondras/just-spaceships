@@ -39,19 +39,18 @@ Ship.prototype.init = function(game, options) {
 	for (var p in options) { this._options[p] = options[p]; }
 
 	var def = Ship.types[this._options.type];
-
 	var largeSize = [this._options.size[0], this._options.size[1]*def.frames];
 	var image = HAF.Sprite.get("img/"+def.image+".png", largeSize, 0, true);
 	HAF.AnimatedSprite.prototype.init.call(this, image, this._options.size, def.frames);
 	
 	this._animation.fps = 10;
 	this._deathTime = 0;
+	
 	this._tmp = 0; /* FIXME */
 
 	this._weapon = new Weapon(this._game, this);	
 	this._size = game.getSize();
 	this._alive = true;
-
 	this._control = {
 		engine: 0, /* -1 = full back, 1 = full forward */
 		torque: {
@@ -60,7 +59,6 @@ Ship.prototype.init = function(game, options) {
 		},
 		fire: false
 	}
-
 	this._phys = {
 		mass: 1,
 		orientation: 0,
@@ -69,7 +67,7 @@ Ship.prototype.init = function(game, options) {
 		velocity: [0, 0] /* pixels per second */
 	}
 	
-	this._pilot = new Pilot.AI(this._control, this._phys);
+	this._pilot = new Pilot.AI("", this);
 	this._mini = new Ship.Mini(game, def.color);
 	game.getEngine().addActor(this, "ships");
 }
@@ -78,89 +76,29 @@ Ship.prototype.getPilot = function() {
 	return this._pilot;
 }
 
+Ship.prototype.getWeapon = function() {
+	return this._weapon;
+}
+
+Ship.prototype.getControl = function() {
+	return this._control;
+}
+
+Ship.prototype.getPhys = function() {
+	return this._phys;
+}
+
 Ship.prototype.tick = function(dt) {
-	/* FIXME refactor to multiple methods */
 	var changed = HAF.AnimatedSprite.prototype.tick.call(this, dt);
-	
 	this._pilot.act();
 
 	dt /= 1000;
 
-	if (this._alive && this._control.fire && this._weapon.isReady()) { /* fire */
-		this._tmp = (this._tmp+1)%2;
-		var angle = (this._tmp ? -1 : 1) * Math.PI/4;
-		angle += this._phys.orientation;
-		var dist = 25;
-		
-		var pos = [
-			this._phys.position[0] + dist * Math.cos(angle),
-			this._phys.position[1] + dist * Math.sin(angle)
-		];
-		var vel = [
-			this._phys.velocity[0],
-			this._phys.velocity[1]
-		]
-		this._weapon.fire(pos, this._phys.orientation, vel);
-	}
+	changed = this._tickWeapons(dt) || changed;
+	changed = this._tickRotation(dt) || changed;
+	changed = this._tickMovement(dt) || changed;
 
-
-	if (this._alive && this._control.torque.mode) { /* rotate */
-		var orientationDiff = 0;
-		switch (this._control.torque.mode) {
-			case 1: /* target angle */
-				var diff1 = this._control.torque.target - this._phys.orientation; /* CW difference */
-				var diff2 = diff1 + (diff1 < 0 ? 1 : -1) * 2 * Math.PI; /* CCW difference */
-				var diff = (Math.abs(diff1) < Math.abs(diff2) ? diff1 : diff2); /* goal difference */
-				
-				var maxAmount = this._options.maxTorque * dt / this._phys.mass; /* we can rotate up to this amount */
-				
-				if (maxAmount >= Math.abs(diff)) { /* we can rotate further; cutoff at target */
-					orientationDiff = diff;
-				} else {
-					orientationDiff = maxAmount * (diff < 0 ? -1 : 1);
-				}
-			break;
-			
-			case 2: /* forever */
-				orientationDiff = (this._control.torque.target < 0 ? -1 : 1) * this._options.maxTorque * dt / this._phys.mass;
-			break;
-		}
-	
-		this._phys.orientation = (this._phys.orientation + orientationDiff).mod(2*Math.PI);
-		changed = true;
-	}
-	
-	for (var i=0;i<2;i++) { /* adjust position */
-		if (this._control.engine && this._alive) { /* engines add force => velocity */
-			var force = (this._control.engine > 0 ? 1 : 0.5) * this._options.maxForce * this._control.engine;
-			force *= (i ? Math.sin : Math.cos)(this._phys.orientation);
-			this._phys.velocity[i] += force * dt / this._phys.mass;
-		}
-		
-		/* drag => decay of velocity */ 
-		this._phys.velocity[i] -= this._phys.velocity[i] * Math.min(1, dt * this._phys.decay / this._phys.mass);
-
-		/* move ship */
-		this._phys.position[i] = (this._phys.position[i] + this._phys.velocity[i] * dt).mod(this._size[i]);
-		
-		var px = Math.round(this._phys.position[i]);
-		if (px != this._sprite.position[i]) {
-			this._sprite.position[i] = px;
-			changed = true;
-		}
-		
-	}
-	
-	if (!this._control.engine) { /* too slow => stop */
-		var v = this._phys.velocity;
-		if (v[0]*v[0] + v[1]*v[1] < 50) { 
-			this._phys.velocity[0] = 0;
-			this._phys.velocity[1] = 0;
-		}
-	}
-	
-	/* update mini */
-	if (this._alive && changed) { this._mini.setPosition(this._sprite.position); }
+	if (this._alive && changed) { this._mini.setPosition(this._sprite.position); } /* update mini */
 
 	return changed;
 }
@@ -210,9 +148,13 @@ Ship.prototype.collidesWith = function(position) {
 
 Ship.prototype.damage = function(weapon) {
 	var amount = weapon.getDamage();
+	
+	var labelPos = this._sprite.position.clone();
+	labelPos[1] -= this._sprite.size[1]/2;
+	new Label(this._game, "-" + amount, labelPos);
 	/* FIXME hitpoints */
 	
-	this.die();
+	//this.die();
 }
 
 Ship.prototype.die = function() {
@@ -224,3 +166,83 @@ Ship.prototype.die = function() {
 	new Explosion(this._game, this._sprite.position);
 }
 
+Ship.prototype._tickWeapons = function() {
+	if (this._alive && this._control.fire && this._weapon.isReady()) { /* fire */
+		this._tmp = (this._tmp+1)%2;
+		var angle = (this._tmp ? -1 : 1) * Math.PI/4;
+		angle += this._phys.orientation;
+		var dist = 25; /* FIXME sprite size */
+		
+		var pos = [
+			this._phys.position[0] + dist * Math.cos(angle),
+			this._phys.position[1] + dist * Math.sin(angle)
+		];
+		var vel = this._phys.velocity.clone();
+		this._weapon.fire(pos, this._phys.orientation, vel);
+	}
+	
+	return false;
+}
+
+Ship.prototype._tickRotation = function(dt) {
+	if (this._alive && this._control.torque.mode) { /* rotate */
+		var orientationDiff = 0;
+		switch (this._control.torque.mode) {
+			case 1: /* target angle */
+				var diff = this._phys.orientation.angleDiff(this._control.torque.target);
+				
+				var maxAmount = this._options.maxTorque * dt / this._phys.mass; /* we can rotate up to this amount */
+				
+				if (maxAmount >= Math.abs(diff)) { /* we can rotate further; cutoff at target */
+					orientationDiff = diff;
+				} else {
+					orientationDiff = maxAmount * (diff < 0 ? -1 : 1);
+				}
+			break;
+			
+			case 2: /* forever */
+				orientationDiff = (this._control.torque.target < 0 ? -1 : 1) * this._options.maxTorque * dt / this._phys.mass;
+			break;
+		}
+	
+		this._phys.orientation = (this._phys.orientation + orientationDiff).mod(2*Math.PI);
+		return true;
+	}
+	
+	return false;
+}
+
+Ship.prototype._tickMovement = function(dt) {
+	var changed = false;
+
+	for (var i=0;i<2;i++) { /* adjust position */
+		if (this._control.engine && this._alive) { /* engines add force => velocity */
+			var force = (this._control.engine > 0 ? 1 : 0.5) * this._options.maxForce * this._control.engine;
+			force *= (i ? Math.sin : Math.cos)(this._phys.orientation);
+			this._phys.velocity[i] += force * dt / this._phys.mass;
+		}
+		
+		/* drag => decay of velocity */ 
+		this._phys.velocity[i] -= this._phys.velocity[i] * Math.min(1, dt * this._phys.decay / this._phys.mass);
+
+		/* move ship */
+		this._phys.position[i] = (this._phys.position[i] + this._phys.velocity[i] * dt).mod(this._size[i]);
+		
+		var px = Math.round(this._phys.position[i]);
+		if (px != this._sprite.position[i]) {
+			this._sprite.position[i] = px;
+			changed = true;
+		}
+		
+	}
+	
+	if (!this._control.engine) { /* too slow => stop */
+		var v = this._phys.velocity;
+		if (v[0]*v[0] + v[1]*v[1] < 50) { 
+			this._phys.velocity[0] = 0;
+			this._phys.velocity[1] = 0;
+		}
+	}
+	
+	return changed;
+}
