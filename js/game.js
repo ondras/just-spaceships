@@ -28,16 +28,29 @@ Game.prototype.init = function() {
 	this._engine.addActor(new Background(this), "bg");
 	this._ships.push(new Ship.Player(this));
 
-	var ai = new Ship(this, {type:"red"});
+	var ai = new Ship(this, {type:"purple"});
 	this._ships.push(ai);
 	ai._control.engine = 0.5;
 	ai._phys.position[1] += -200;
 	
-	var ai = new Ship(this, {type:"blue"});
+	var ai = new Ship(this, {type:"green"});
 	this._ships.push(ai);
 	ai._phys.mass = 2;
 	ai._control.engine = 0.5;
 	ai._phys.position[1] += 200;
+
+	var ai = new Ship(this, {type:"red"});
+	this._ships.push(ai);
+	ai._control.engine = 0.5;
+	ai._phys.position[1] += 300;
+	ai._phys.orientation = -Math.PI/8;
+
+	var ai = new Ship(this, {type:"blue"});
+	this._ships.push(ai);
+	ai._control.engine = 0.5;
+	ai._phys.position[1] += -300;
+	ai._phys.mass = 2;
+	ai._phys.orientation = Math.PI/8;
 
 	/* */
 	var fps = new HAF.FPS(this._engine).getContainer();
@@ -100,21 +113,13 @@ Game.prototype.getShips = function() {
  */
 Game.prototype.inPort = function(coords, distance) {
 	for (var i=0;i<2;i++) {
-		var first = this._offset[i];
-		var second = (this._offset[i] + this._port[i]).mod(this._size[i]);
+		var first = (this._offset[i] - distance).mod(this._size[i]);
+		var second = (this._offset[i] + this._port[i] + distance).mod(this._size[i]);
 
 		if (first < second) { /* normal port position */
-			if (
-				(coords[i] + distance).mod(this._size[i]) < first
-				||
-				(coords[i] - distance).mod(this._size[i]) > second
-			) { return false; } 
+			if (coords[i] < first || coords[i] > second) { return false; }
 		} else { /* wrapped port */
-			if (
-				(coords[i] - distance).mod(this._size[i]) < first
-				&&
-				(coords[i] + distance).mod(this._size[i]) > second
-			) { return false; } 
+			if (coords[i] < first && coords[i] > second) { return false; }
 		}
 	}
 	

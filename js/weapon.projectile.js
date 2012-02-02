@@ -17,6 +17,8 @@ Weapon.Projectile.prototype.init = function(game, weapon, position, velocity) {
 	HAF.Sprite.prototype.init.call(this, image, size);
 	
 	this._game.getEngine().addActor(this, "fx");
+	
+	Game.Audio.play("shot");
 }
 
 Weapon.Projectile.prototype.tick = function(dt) {

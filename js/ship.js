@@ -15,6 +15,16 @@ Ship.types = {
 		image: "Maloc_Pirate_64",
 		color: "#f00",
 		frames: 99
+	},
+	purple: {
+		image: "Feiyan_Ranger_64",
+		color: "#f0f",
+		frames: 100
+	},
+	green: {
+		image: "Peleng_Pirate_64",
+		color: "#0f0",
+		frames: 149
 	}
 }
 
