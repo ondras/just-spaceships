@@ -26,31 +26,36 @@ Game.prototype.init = function() {
 	this._engine.addActor(this._map, "map");
 
 	this._engine.addActor(new Background(this), "bg");
-	this._ships.push(new Ship.Player(this));
+	var player = new Ship.Player(this);
+	this._ships.push(player);
 
 	var ai = new Ship(this, {type:"purple"});
 	this._ships.push(ai);
-	ai._control.engine = 0.5;
+//	ai._control.engine = 0.5;
 	ai._phys.position[1] += -200;
+	ai.getPilot().setTarget(player);
 	
 	var ai = new Ship(this, {type:"green"});
 	this._ships.push(ai);
 	ai._phys.mass = 2;
-	ai._control.engine = 0.5;
+//	ai._control.engine = 0.5;
 	ai._phys.position[1] += 200;
+	ai.getPilot().setTarget(player);
 
 	var ai = new Ship(this, {type:"red"});
 	this._ships.push(ai);
-	ai._control.engine = 0.5;
+//	ai._control.engine = 0.5;
 	ai._phys.position[1] += 300;
 	ai._phys.orientation = -Math.PI/8;
+	ai.getPilot().setTarget(player);
 
 	var ai = new Ship(this, {type:"blue"});
 	this._ships.push(ai);
-	ai._control.engine = 0.5;
+//	ai._control.engine = 0.5;
 	ai._phys.position[1] += -300;
 	ai._phys.mass = 2;
 	ai._phys.orientation = Math.PI/8;
+	ai.getPilot().setTarget(player);
 
 	/* */
 	var fps = new HAF.FPS(this._engine).getContainer();
