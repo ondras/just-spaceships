@@ -45,6 +45,7 @@ Ship.prototype.init = function(game, options) {
 	HAF.AnimatedSprite.prototype.init.call(this, image, this._options.size, def.frames);
 	
 	this._animation.fps = 10;
+	this._deathTime = 0;
 	this._tmp = 0; /* FIXME */
 
 	this._weapon = new Weapon(this._game, this);	
@@ -165,7 +166,7 @@ Ship.prototype.tick = function(dt) {
 }
 
 Ship.prototype.draw = function(context) {
-	if (!this._game.inPort(this._sprite.position, 100)) { if (this instanceof Ship.Player) alert("a"); return; } /* do not draw outside of port */
+	if (!this._game.inPort(this._sprite.position, 100)) { if (this instanceof Ship.Player) return; } /* do not draw outside of port */
 		
 	var offset = this._game.getOffset();
 	var tmp = [0, 0];
@@ -177,6 +178,16 @@ Ship.prototype.draw = function(context) {
 
 	context.save();
 	
+	if (!this._alive) {
+		var dt = Date.now() - this._deathTime;
+		var limit = 2000; /* FIXME constant? */
+		if (dt > limit) {
+			this._game.getEngine().removeActor(this, "ships");
+			context.globalAlpha = 0;
+		} else {
+			context.globalAlpha = (limit-dt) / limit;
+		}
+	}
 	context.translate(tmp[0], tmp[1]);
 	context.rotate(angle);
 	context.translate(-tmp[0], -tmp[1]);
@@ -206,14 +217,10 @@ Ship.prototype.damage = function(weapon) {
 
 Ship.prototype.die = function() {
 	this._alive = false;
+	this._deathTime = Date.now();
 	this._mini.die();
 	this._phys.decay *= 5;
 	this.dispatch("ship-death");
 	new Explosion(this._game, this._sprite.position);
-	
-	/* FIXME!! */
-	setTimeout(function() {
-		this._game.getEngine().removeActor(this, "ships");
-	}.bind(this), 1000);
 }
 

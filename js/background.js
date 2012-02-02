@@ -3,6 +3,7 @@ var Background = OZ.Class().extend(HAF.Actor);
 Background.prototype.init = function(game) {
 	this._game = game;
 	this._size = game.getSize();
+/*
 	this._canvas = OZ.DOM.elm("canvas", {width:this._size[0], height:this._size[1]});
 	
 	var context = this._canvas.getContext("2d");
@@ -11,16 +12,16 @@ Background.prototype.init = function(game) {
 
 	context.strokeStyle = "#333";
 	context.beginPath();
-	for (var i=0;i<this._size[0];i+=100) { /* vertical lines */	
+	for (var i=0;i<this._size[0];i+=100) { // vertical lines 
 		context.moveTo(i+0.5, 0);
 		context.lineTo(i+0.5, this._size[1]);
 	}	
-	for (var j=0;j<this._size[1];j+=100) { /* horizontal lines */	
+	for (var j=0;j<this._size[1];j+=100) { // horizontal lines
 		context.moveTo(0, j+0.5);
 		context.lineTo(this._size[0], j+0.5);
 	}
 	context.stroke();
-	
+	*/
 	
 }
 
