@@ -19,6 +19,11 @@ HAF.Engine.prototype.init = function(size,  options) {
 		id: "haf"
 	};
 	for (var p in options) { this._options[p] = options[p]; }
+	
+	this._ts = {
+		tick: 0,
+		draw: 0
+	}
 
 	this._running = false;
 	this._container = OZ.DOM.elm("div", {id:this._options.id, position:"relative"});
@@ -121,7 +126,9 @@ HAF.Engine.prototype.setDirty = function(canvasId) {
 HAF.Engine.prototype.start = function() {
 	this._running = true;
 	this.dispatch("start");
-	this._ts = Date.now();
+	var ts = Date.now();
+	this._ts.tick = ts;
+	this._ts.draw = ts;
 	this._tick();
 	this._draw();
 }
@@ -140,8 +147,8 @@ HAF.Engine.prototype._tick = function() {
 	setTimeout(this._tick, 1000/this._options.fps);
 
 	var ts1 = Date.now();
-	var dt = ts1 - this._ts;
-	this._ts = ts1;
+	var dt = ts1 - this._ts.tick;
+	this._ts.tick = ts1;
 	var allActors = 0;
 	var changedActors = 0;
 	
@@ -160,7 +167,7 @@ HAF.Engine.prototype._tick = function() {
 	}
 	
 	var ts2 = Date.now();
-	this.dispatch("tick", {time:ts2-ts1, all:allActors, changed:changedActors});
+	this.dispatch("tick", {delay:dt, time:ts2-ts1, all:allActors, changed:changedActors});
 }
 
 /**
@@ -171,6 +178,8 @@ HAF.Engine.prototype._draw = function() {
 	
 	this._schedule.call(window, this._draw); /* schedule next tick */
 	var ts1 = Date.now();
+	var dt = ts1 - this._ts.draw;
+	this._ts.draw = ts1;
 	
 	for (var id in this._canvases) { /* for all canvases */
 		var obj = this._canvases[id];
@@ -217,143 +226,29 @@ HAF.Engine.prototype._draw = function() {
 	}
 	
 	var ts2 = Date.now();
-	this.dispatch("frame", {time:ts2-ts1});
+	this.dispatch("draw", {delay:dt, time:ts2-ts1});
 }
 
 /**
- * @class FPS measurement & display
+ * Abstract FPS monitor
  */
-HAF.FPS = OZ.Class();
-HAF.FPS.prototype.init = function(engine) {
-	this._interval = null;
-	this._intervalLength = 500;
-	
-	this._ts = null;
-
-	this._frames = { /* absolute frames */
-		tick: null,
-		draw: null 
-	}
-	this._localFrames = {
-		tick: null,
-		draw: null
-	}
-	this._localTime = {
-		tick: null,
-		draw: null
-	}
-
-	this._dom = {
-		container: OZ.DOM.elm("div", {whiteSpace:"pre", fontFamily:"monospace"}),
-		frames: {
-			tick: OZ.DOM.elm("span"),
-			draw: OZ.DOM.elm("span")
-		},
-		pot: OZ.DOM.elm("span"),
-		cur: OZ.DOM.elm("span")
-	}
-	
-	OZ.DOM.append([
-		this._dom.container,
-		OZ.DOM.text("Total frames (sim/draw): "),
-		this._dom.frames.tick,
-		OZ.DOM.text("/"),
-		this._dom.frames.draw,
-		OZ.DOM.text(" • Potential FPS: "),
-		this._dom.pot,
-		OZ.DOM.text(" • Current FPS: "),
-		this._dom.cur
-	]);
-	
-	OZ.Event.add(engine, "start", this._start.bind(this));
-	OZ.Event.add(engine, "stop", this._stop.bind(this));
-	OZ.Event.add(engine, "frame", this._frame.bind(this));
-	OZ.Event.add(engine, "tick", this._tick.bind(this));
-}
-
-HAF.FPS.prototype.getContainer = function() {
-	return this._dom.container;
-}
-
-HAF.FPS.prototype._start = function(e) {
-	this._frames.tick = 0;
-	this._frames.draw = 0;
-
-	this._localFrames.tick = 0;
-	this._localFrames.draw = 0;
-
-	this._localTime.tick = 0;
-	this._localTime.draw = 0;
-	
-	this._ts = Date.now();
-
-	this._interval = setInterval(this._check.bind(this), this._intervalLength);
-}
-
-HAF.FPS.prototype._stop = function(e) {
-	clearInterval(this._interval);
-	this._interval = null;
-}
-
-HAF.FPS.prototype._tick = function(e) {
-	this._frames.tick++;
-	this._dom.frames.tick.innerHTML = this._pad(this._frames.tick + "", 7);
-
-	this._localFrames.tick++;
-	this._localTime.tick += e.data.time;
-}
-
-HAF.FPS.prototype._frame = function(e) {
-	this._frames.draw++;
-	this._dom.frames.draw.innerHTML = this._pad(this._frames.draw + "", 7);
-
-	this._localFrames.draw++;
-	this._localTime.draw += e.data.time;
-}
-
-
-HAF.FPS.prototype._pad = function(str, len) {
-	while (str.length < len) { str = " " + str; }
-	return str;
-}
-
-HAF.FPS.prototype._check = function() {
-	var ts = Date.now();
-	var dt = ts - this._ts;
-
-	/* potential simulation FPS */
-	var avgFrame = 1000 * this._localFrames.tick / this._localTime.tick;
-	/* potential drawing FPS */
-	var avgDraw = 1000 * this._localFrames.draw / this._localTime.draw;
-
-	this._dom.pot.innerHTML = this._pad(avgFrame.toFixed(2), 7) + "/" + this._pad(avgDraw.toFixed(2), 7);
-	
-	/* current simulation FPS */
-	var curFrame = 1000 * this._localFrames.tick / dt;
-	/* current drawing FPS */
-	var curDraw = 1000 * this._localFrames.draw / dt;
-
-	this._dom.cur.innerHTML = this._pad(curFrame.toFixed(2), 7) + "/" + this._pad(curDraw.toFixed(2), 7);
-
-	this._ts = ts;
-	this._localFrames.tick = 0;
-	this._localFrames.draw = 0;
-	this._localTime.tick = 0;
-	this._localTime.draw = 0;
-}
-
 HAF.Monitor = OZ.Class();
-HAF.Monitor.prototype.init = function(engine, size) {
+HAF.Monitor.prototype.init = function(engine, size, event, options) {
 	this._size = size;
-	this._canvas = OZ.DOM.elm("canvas", {className:"monitor"});
+	this._options = {
+		textColor: "#000"
+	};
+	for (var p in options) { this._options[p] = options[p]; }
+	this._canvas = OZ.DOM.elm("canvas", {width:size[0], height:size[1], className:"monitor"});
 	this._ctx = this._canvas.getContext("2d");
-
-	this._dataTick = [];
-	this._dataFrame = [];
+	this._ctx.textBaseline = "top";
+	this._ctx.font = "10px monospace";
+	
+	this._data = [];
+	this._avg = [];
 	
 	OZ.Event.add(engine, "start", this._start.bind(this));
-	OZ.Event.add(engine, "tick", this._tick.bind(this));
-	OZ.Event.add(engine, "frame", this._frame.bind(this));
+	OZ.Event.add(engine, event, this._event.bind(this));
 }
 
 HAF.Monitor.prototype.getContainer = function() {
@@ -361,62 +256,100 @@ HAF.Monitor.prototype.getContainer = function() {
 }
 
 HAF.Monitor.prototype._start = function(e) {
-	this._canvas.width = this._size[0];
-	this._canvas.height = this._size[1];
-
-	this._dataTick = [];
-	this._dataFrame = [];
-	this._dataChanged = [];
+	this._data = [];
 }
 
-HAF.Monitor.prototype._tick = function(e) {
-	this._dataTick.push(e.data.time);
-	this._dataChanged.push(e.data.changed/e.data.all);
-	if (this._dataTick.length > this._size[0]) { 
-		this._dataTick.shift(); 
-		this._dataChanged.shift(); 
-	}
-	this._draw();	
-}
-
-HAF.Monitor.prototype._frame = function(e) {
-	this._dataFrame.push(e.data.time);
-	if (this._dataFrame.length > this._size[0]) { this._dataFrame.shift(); }
+HAF.Monitor.prototype._event = function(e) {
+	if (this._data.length > this._size[0]) { this._data.shift(); }
+	this._avg.push(this._data[this._data.length-1]);
+	if (this._avg.length > 30) { this._avg.shift(); }
 	this._draw();	
 }
 
 HAF.Monitor.prototype._draw = function() {
-	this._canvas.width = this._canvas.width;
+	this._ctx.clearRect(0, 0, this._size[0], this._size[1]);
+}
+
+HAF.Monitor.prototype._drawSet = function(index, color) {
+	this._ctx.beginPath();
+	var i = this._data.length;
+	var w = this._size[0];
+	var h = this._size[1]-0.5;
+	while (i--) {
+		this._ctx.lineTo(w--, h-this._data[i][index]);
+	}
+	this._ctx.strokeStyle = color;
+	this._ctx.stroke();
+}
+
+/**
+ * Draw monitor
+ */
+HAF.Monitor.Draw = OZ.Class().extend(HAF.Monitor);
+HAF.Monitor.Draw.prototype.init = function(engine, size, options) {
+	HAF.Monitor.prototype.init.call(this, engine, size, "draw", options);
+}
+
+HAF.Monitor.Draw.prototype._event = function(e) {
+	this._data.push([e.data.delay, e.data.time]);
+	HAF.Monitor.prototype._event.call(this, e);
+}
+
+HAF.Monitor.Draw.prototype._draw = function() {
+	HAF.Monitor.prototype._draw.call(this);
 	
-	this._ctx.beginPath();
-	var i = this._dataTick.length;
-	var w = this._size[0];
-	var h = this._size[1]-0.5;
-	while (i--) {
-		this._ctx.lineTo(w--, h-this._dataTick[i]);
+	this._drawSet(0, "#88f");
+	this._drawSet(1, "#00f");
+	
+	var avg = [0, 0];
+	for (var i=0;i<this._avg.length;i++) {
+		avg[0] += this._avg[i][0];
+		avg[1] += this._avg[i][1];
 	}
-	this._ctx.strokeStyle = "blue";
-	this._ctx.stroke();
+	var fps1 = (1000 * this._avg.length / avg[0]).toFixed(1);
+	var fps2 = (1000 * this._avg.length / avg[1]).toFixed(1);
+	
+	var text = "Draw: " + fps1 + "/" + fps2 + " FPS";
+	this._ctx.fillStyle = this._options.textColor;
+	this._ctx.fillText(text, 5, 5);
+}
 
-	this._ctx.beginPath();
-	var i = this._dataFrame.length;
-	var w = this._size[0];
-	var h = this._size[1]-0.5;
-	while (i--) {
-		this._ctx.lineTo(w--, h-this._dataFrame[i]);
-	}
-	this._ctx.strokeStyle = "red";
-	this._ctx.stroke();
+/**
+ * Sim monitor
+ */
+HAF.Monitor.Sim = OZ.Class().extend(HAF.Monitor);
+HAF.Monitor.Sim.prototype.init = function(engine, size, options) {
+	HAF.Monitor.prototype.init.call(this, engine, size, "tick", options);
+}
 
-	this._ctx.beginPath();
-	var i = this._dataChanged.length;
-	var w = this._size[0];
-	var h = this._size[1]-1;
-	while (i--) {
-		this._ctx.lineTo(w--, 0.5+Math.round(h*(1-this._dataChanged[i])));
+HAF.Monitor.Sim.prototype._event = function(e) {
+	var frac = e.data.changed/e.data.all;
+	frac *= (this._size[1]-1);
+	this._data.push([e.data.delay, e.data.time, frac, e.data.changed, e.data.all]);
+	HAF.Monitor.prototype._event.call(this, e);
+}
+
+HAF.Monitor.Sim.prototype._draw = function() {
+	HAF.Monitor.prototype._draw.call(this);
+	
+	this._drawSet(0, "#f88");
+	this._drawSet(1, "#f00");
+	this._drawSet(2, "#4f4");
+
+	var avg = [0, 0];
+	for (var i=0;i<this._avg.length;i++) {
+		avg[0] += this._avg[i][0];
+		avg[1] += this._avg[i][1];
 	}
-	this._ctx.strokeStyle = "green";
-	this._ctx.stroke();
+	var fps1 = (1000 * this._avg.length / avg[0]).toFixed(1);
+	var fps2 = (1000 * this._avg.length / avg[1]).toFixed(1);
+	
+	var changed = this._data[this._data.length-1][3];
+	var all = this._data[this._data.length-1][4];
+	
+	var text = "Sim: " + fps1 + "/" + fps2 + " FPS, " + changed + "/" + all + " changed";
+	this._ctx.fillStyle = this._options.textColor;
+	this._ctx.fillText(text, 5, 5);
 }
 
 /**
