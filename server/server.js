@@ -4,34 +4,50 @@ var Server = require("websocket").Server;
 var ws = new Server("0.0.0.0", 8888);
 
 var clients = [];
-var commands = [];
 
 var app = {
 	onmessage: function(client, data) {
-		var cs = JSON.parse(data);
-		for (var i=0;i<cs.length;i++) {
-			var c = cs[i];
-			if (c[0] == "c") { 
-				commands = []; 
-			} else {
-				commands.push(c);
-			}
-		}
+		data = JSON.parse(data);
 
+		var index = -1;
+		for (var i=0;i<clients.length;i++) { if (clients[i].client == client) { index = i; } }
+		
+		var c = clients[index];
+		for (var id in data) {
+			c.ships[id] = data[id];
+		}
+		
 		for (var i=0;i<clients.length;i++) {
-			if (clients[i] != client) {
-				ws.send(clients[i], data);
-			}
+			if (i == index) { continue; }
+			ws.send(clients[i].client, data);
 		}
 	},
 	onconnect: function(client, headers) {
-		clients.push(client);
-		if (commands.length) { ws.send(client, JSON.stringify(commands)); }
+		var otherShips = {};
+		for (var i=0;i<clients.length;i++) {
+			for (var id in clients[i].ships) {
+				otherShips[id] = clients[i].ships[id];
+			}
+		}
+		clients.push({
+			client: client,
+			ships: {}
+		});
+		ws.send(client, JSON.stringify(otherShips)); 
 	},
+
 	ondisconnect: function(client, code, message) {
-		var index = clients.indexOf(client);
-		if (index != -1) { clients.splice(index, 1); }
-		if (!clients.length) { commands = []; }
+		var index = -1;
+		for (var i=0;i<clients.length;i++) { if (clients[i].client == client) { index = i; } }
+		
+		if (index != -1) { 
+			var data = clients[index];
+			clients.splice(index, 1); 
+			for (var id in data.ships) { data.ships[id] = null; }
+			for (var i=0;i<clients.length;i++) {
+				ws.send(clients[i].client, JSON.stringify(data.ships));
+			}
+		}
 	},
 	path: "/space"
 };
