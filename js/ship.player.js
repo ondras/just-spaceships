@@ -4,7 +4,7 @@
 Ship.Player = OZ.Class().extend(Ship);
 Ship.Player.prototype.init = function(game) {
 	Ship.prototype.init.call(this, game);
-	this._pilot = new Pilot.UI("", this);
+	this._pilot = new Pilot.UI(this._game, this, "Human pilot");
 }
 
 Ship.Player.prototype.tick = function(dt) {

@@ -14,7 +14,8 @@ Explosion.prototype.init = function(game, position) {
 	this._animation.fps = 20;
 	
 	this._game.getEngine().addActor(this, "fx");
-	Game.Audio.play("explosion");
+	
+	if (this._game.inPort(position, 100)) { Game.Audio.play("explosion"); }
 }
 
 Explosion.prototype.tick = function(dt) {

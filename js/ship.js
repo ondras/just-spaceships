@@ -30,11 +30,15 @@ Ship.types = {
 
 Ship.prototype.init = function(game, options) {
 	this._game = game;
+	this._size = game.getSize();
+
 	this._options = {
 		type: "yellow",
 		size: [64, 64],
 		maxForce: 500, /* pixels per weight per second^2 in vacuum */
-		maxTorque: 150 * Math.PI/180 /* degrees per second */
+		maxTorque: 150 * Math.PI/180, /* degrees per second */
+		mass: 1,
+		position: [this._size[0]/2, this._size[1]/2]
 	};
 	for (var p in options) { this._options[p] = options[p]; }
 
@@ -49,7 +53,6 @@ Ship.prototype.init = function(game, options) {
 	this._tmp = 0; /* FIXME */
 
 	this._weapon = new Weapon(this._game, this);	
-	this._size = game.getSize();
 	this._alive = true;
 	this._control = {
 		engine: 0, /* -1 = full back, 1 = full forward */
@@ -60,15 +63,15 @@ Ship.prototype.init = function(game, options) {
 		fire: false
 	}
 	this._phys = {
-		mass: 1,
+		mass: this._options.mass,
 		orientation: 0,
 		decay: 0.5,
-		position: [this._size[0]/2, this._size[1]/2],
+		position: this._options.position,
 		velocity: [0, 0] /* pixels per second */
 	}
 	this._hp = Math.round(this._phys.mass * 1000);
 	
-	this._pilot = new Pilot.AI("", this);
+	this._pilot = new Pilot.AI(this._game, this, "");
 	this._mini = new Ship.Mini(game, def.color);
 	game.getEngine().addActor(this, "ships");
 }
@@ -158,7 +161,9 @@ Ship.prototype.damage = function(weapon) {
 	if (this._hp <= 0) {
 		this.die();
 		var labelPos = this._sprite.position.clone();
-		new Label(this._game, this._pilot.getName() + " killed by " + weapon.getShip().getPilot().getName(), labelPos, {size:30});
+		var enemyPilot = weapon.getShip().getPilot();
+		enemyPilot.addKill();
+		this.showLabel(this._pilot.getName() + " killed by " + enemyPilot.getName(), {size:30});
 	}
 }
 
@@ -169,6 +174,10 @@ Ship.prototype.die = function() {
 	this._phys.decay *= 5;
 	this.dispatch("ship-death");
 	new Explosion(this._game, this._sprite.position);
+}
+
+Ship.prototype.showLabel = function(text, options) {
+	new Label(this._game, text, this._sprite.position.clone(), options);
 }
 
 Ship.prototype._tickWeapons = function() {

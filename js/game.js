@@ -18,6 +18,10 @@ Array.prototype.clone = function() {
 	return c;
 }
 
+Array.prototype.random = function() {
+	return this[Math.floor(Math.random()*this.length)];
+}
+
 var Game = OZ.Class();
 Game.prototype.init = function() {
 	this._port = [0, 0];
@@ -28,19 +32,7 @@ Game.prototype.init = function() {
 	
 	this._initEngine();
 	this._initShips();
-	
-	/* */
-	var monitor1 = new HAF.Monitor.Sim(this._engine, [220, 100], {textColor:"#aaa"}).getContainer();
-	monitor1.style.position = "absolute";
-	monitor1.style.left = "0px";
-	monitor1.style.top = "0px";
-	document.body.appendChild(monitor1);
-	var monitor2 = new HAF.Monitor.Draw(this._engine, [220, 100], {textColor:"#aaa"}).getContainer();
-	monitor2.style.position = "absolute";
-	monitor2.style.left = "0px";
-	monitor2.style.top = monitor1.offsetHeight + "px";
-	document.body.appendChild(monitor2);
-	/* */
+	this._initDebug();
 	
 	this._engine.start();
 	Game.Audio.play("neointro");
@@ -126,36 +118,49 @@ Game.prototype._resize = function() {
 Game.prototype._shipDeath = function(e) {
 	var index = this._ships.indexOf(e.target);
 	this._ships.splice(index, 1);
+	
+	/* */
+	this._addRandomShip();
 }
 
 Game.prototype._initShips = function() {
 	OZ.Event.add(null, "ship-death", this._shipDeath.bind(this));
 
-	var player = new Ship.Player(this);
-	this._ships.push(player);
+	this._addShip(Ship.Player);
+	this._addRandomShip();
+	this._addRandomShip();
+	this._addRandomShip();
+	this._addRandomShip();
+}
 
-	var ai = new Ship(this, {type:"purple"});
-	this._ships.push(ai);
-	ai._phys.position[1] += -200;
-	ai.getPilot().setTarget(player);
+Game.prototype._addShip = function(ctor, options) {
+	var ship = new ctor(this, options);
+	this._ships.push(ship);
+	return ship;
+}
+
+Game.prototype._addRandomShip = function() {
+	var color = ["purple", "green", "red", "blue"].random();
+	var mass = 0.5 + Math.random();
+	var position = [
+		Math.random()*this._size[0],
+		Math.random()*this._size[1]
+	];
 	
-	var ai = new Ship(this, {type:"green"});
-	this._ships.push(ai);
-	ai._phys.mass = 2;
-	ai._phys.position[1] += 200;
-	ai.getPilot().setTarget(player);
+	var ship = this._addShip(Ship, {type:color, mass:mass, position:position});
+	ship.getPilot().setRandomTarget();
+}
 
-	var ai = new Ship(this, {type:"red"});
-	this._ships.push(ai);
-	ai._phys.position[1] += 300;
-	ai._phys.orientation = -Math.PI/8;
-	ai.getPilot().setTarget(player);
+Game.prototype._initDebug = function() {
+	var monitor1 = new HAF.Monitor.Sim(this._engine, [220, 100], {textColor:"#aaa"}).getContainer();
+	monitor1.style.position = "absolute";
+	monitor1.style.left = "0px";
+	monitor1.style.top = "0px";
+	document.body.appendChild(monitor1);
 
-	var ai = new Ship(this, {type:"blue"});
-	this._ships.push(ai);
-	ai._phys.position[1] += -300;
-	ai._phys.mass = 2;
-	ai._phys.orientation = Math.PI/8;
-	ai.getPilot().setTarget(player);
-
+	var monitor2 = new HAF.Monitor.Draw(this._engine, [220, 100], {textColor:"#aaa"}).getContainer();
+	monitor2.style.position = "absolute";
+	monitor2.style.left = "0px";
+	monitor2.style.top = monitor1.offsetHeight + "px";
+	document.body.appendChild(monitor2);
 }

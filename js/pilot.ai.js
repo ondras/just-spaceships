@@ -1,7 +1,7 @@
 Pilot.AI = OZ.Class().extend(Pilot);
 
-Pilot.AI.prototype.init = function(name, ship) {
-	Pilot.prototype.init.call(this, name, ship);
+Pilot.AI.prototype.init = function(game, ship, name) {
+	Pilot.prototype.init.call(this, game, ship, name);
 	this._target = null;
 	this._event = null;
 }
@@ -37,10 +37,24 @@ Pilot.AI.prototype.setTarget = function(target) {
 	this._targetPhys = target.getPhys();
 }
 
+Pilot.AI.prototype.setRandomTarget = function() {
+	var ships = this._game.getShips();
+	var avail = [];
+	for (var i=0;i<ships.length;i++) {
+		var ship = ships[i];
+		if (ship == this._ship) { continue; }
+		avail.push(ship);
+	}
+	if (!avail.length) { return; }
+	this.setTarget(avail.random());
+}
+
 Pilot.AI.prototype._shipDeath = function() {
 	this._target = null;
 	this._control.torque.mode = 0;
 	this._control.fire = false;
 	this._control.engine = 0;
 	OZ.Event.remove(this._event);
+	
+	this.setRandomTarget();
 }

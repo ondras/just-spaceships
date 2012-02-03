@@ -1,7 +1,7 @@
 Pilot.UI = OZ.Class().extend(Pilot);
 
-Pilot.UI.prototype.init = function(name, ship) {
-	Pilot.prototype.init.call(this, name, ship);
+Pilot.UI.prototype.init = function(game, ship, name) {
+	Pilot.prototype.init.call(this, game, ship, name);
 	OZ.Event.add(window, "keydown", this._keydown.bind(this));
 	OZ.Event.add(window, "keyup", this._keyup.bind(this));
 }

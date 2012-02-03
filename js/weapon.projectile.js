@@ -18,7 +18,7 @@ Weapon.Projectile.prototype.init = function(game, weapon, position, velocity) {
 	
 	this._game.getEngine().addActor(this, "fx");
 	
-	Game.Audio.play("shot");
+	if (this._game.inPort(position, 0)) { Game.Audio.play("shot"); }
 }
 
 Weapon.Projectile.prototype.tick = function(dt) {
