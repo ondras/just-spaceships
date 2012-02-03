@@ -34,8 +34,31 @@ Game.prototype.init = function() {
 	this._initShips();
 	this._initDebug();
 	
+	
+	this._remoteShips = {};
+	this._socket = new MozWebSocket("http://localhost:8888/space");
+	OZ.Event.add(this._socket, "message", this._message.bind(this));
+	
+	this._ships[0].setSocket(this._socket);
+	
 	this._engine.start();
 	Game.Audio.play("neointro");
+}
+
+Game.prototype._message = function(e) {
+	var data = JSON.parse(e.data);
+	for (var id in data) {
+		if (id in this._remoteShips) {
+			if (data[id]) {
+				this._remoteShips[id].setPosition(data[id]);
+			} else {
+				this._remoteShips[id].die();
+				delete this._remoteShips[id];
+			}
+		} else {
+			this._remoteShips[id] = new Ship.Remote(this, e.data);
+		}
+	}	
 }
 
 Game.prototype.getEngine = function() {
@@ -125,12 +148,17 @@ Game.prototype._shipDeath = function(e) {
 
 Game.prototype._initShips = function() {
 	OZ.Event.add(null, "ship-death", this._shipDeath.bind(this));
-
 	this._addShip(Ship.Player);
+
+	/*
 	this._addRandomShip();
 	this._addRandomShip();
 	this._addRandomShip();
 	this._addRandomShip();
+	*/
+	
+	
+	
 }
 
 Game.prototype._addShip = function(ctor, options) {
