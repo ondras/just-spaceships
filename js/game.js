@@ -138,7 +138,7 @@ Game.prototype._initShips = function() {
 	this._ships.push(ai);
 	ai._phys.position[1] += -200;
 	ai.getPilot().setTarget(player);
-/*	
+	
 	var ai = new Ship(this, {type:"green"});
 	this._ships.push(ai);
 	ai._phys.mass = 2;
@@ -157,5 +157,5 @@ Game.prototype._initShips = function() {
 	ai._phys.mass = 2;
 	ai._phys.orientation = Math.PI/8;
 	ai.getPilot().setTarget(player);
-*/
+
 }

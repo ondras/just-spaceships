@@ -176,14 +176,13 @@ Ship.prototype._tickWeapons = function() {
 		this._tmp = (this._tmp+1)%2;
 		var angle = (this._tmp ? -1 : 1) * Math.PI/4;
 		angle += this._phys.orientation;
-		var dist = 25; /* FIXME sprite size */
+		var dist = this._sprite.size[0]/3;
 		
 		var pos = [
 			this._phys.position[0] + dist * Math.cos(angle),
 			this._phys.position[1] + dist * Math.sin(angle)
 		];
-		var vel = this._phys.velocity.clone();
-		this._weapon.fire(pos, this._phys.orientation, vel);
+		this._weapon.fire(pos);
 	}
 	
 	return false;

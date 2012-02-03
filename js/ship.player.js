@@ -1,3 +1,6 @@
+/**
+ * Player's ship adjusts viewport and has an UI pilot
+ */
 Ship.Player = OZ.Class().extend(Ship);
 Ship.Player.prototype.init = function(game) {
 	Ship.prototype.init.call(this, game);

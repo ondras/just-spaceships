@@ -27,20 +27,18 @@ Weapon.prototype.isReady = function() {
 
 /**
  * Fire this weapon
- * FIXME nemohly by se ty hodnoty ziskat od lodi?
  * @param {number[]} position initial projectile's position
- * @param {number} orientation ship's orientation (degrees)
- * @param {number[]} velocity ship's velocity
- * @returns {Weapon.Projectile} projectile or false (unable to fire)
+ * @returns {Weapon.Projectile}
  */
-Weapon.prototype.fire = function(position, orientation, velocity) {
+Weapon.prototype.fire = function(position) {
 	this._ts = Date.now();
+	var phys = this._ship.getPhys();
+	var o = phys.orientation;
+	var v = phys.velocity.clone();
 	
 	var k = 0.5;
-	var v = [
-		k*velocity[0] + this._speed * Math.cos(orientation),
-		k*velocity[1] + this._speed * Math.sin(orientation)
-	];
+	v[0] = k*v[0] + this._speed * Math.cos(o);
+	v[1] = k*v[1] + this._speed * Math.sin(o);
 	
 	return new Weapon.Projectile(this._game, this, position, v);
 }
