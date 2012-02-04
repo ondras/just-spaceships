@@ -3,7 +3,7 @@ var Weapon = OZ.Class();
 Weapon.prototype.init = function(game, ship) {
 	this._game = game;
 	this._ship = ship;
-	this._speed = 800;
+	this._speed = 1000;
 	this._ts = 0; /* timestamp of last shot */
 	this._delay = 200;
 }

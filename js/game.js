@@ -3,7 +3,7 @@ Number.prototype.mod = function(n) {
 }
 
 /**
- * If this number represents an angle; what is its difference to another angle?
+ * If this number represents an angle, what is its difference to another angle?
  */
 Number.prototype.angleDiff = function(target) {
 	var diff = target - this;
@@ -32,11 +32,11 @@ Game.prototype.init = function() {
 	
 	this._initEngine();
 	this._initShips();
-	this._initDebug();
+	this._initDebug(true);
 	
 	
 	this._remoteShips = {};
-	this._socket = new MozWebSocket("http://localhost:8888/space");
+//	this._socket = new (window.WebSocket || window.MozWebSocket)("ws://localhost:8888/space");
 	OZ.Event.add(this._socket, "message", this._message.bind(this));
 	
 	this._ships[0].setSocket(this._socket);
@@ -150,12 +150,12 @@ Game.prototype._initShips = function() {
 	OZ.Event.add(null, "ship-death", this._shipDeath.bind(this));
 	this._addShip(Ship.Player);
 
-	/*
+	
 	this._addRandomShip();
 	this._addRandomShip();
 	this._addRandomShip();
 	this._addRandomShip();
-	*/
+	
 	
 	
 	
@@ -179,14 +179,14 @@ Game.prototype._addRandomShip = function() {
 	ship.getPilot().setRandomTarget();
 }
 
-Game.prototype._initDebug = function() {
-	var monitor1 = new HAF.Monitor.Sim(this._engine, [220, 100], {textColor:"#aaa"}).getContainer();
+Game.prototype._initDebug = function(chart) {
+	var monitor1 = new HAF.Monitor.Sim(this._engine, [220, 100], {textColor:"#aaa", chart:chart}).getContainer();
 	monitor1.style.position = "absolute";
 	monitor1.style.left = "0px";
 	monitor1.style.top = "0px";
 	document.body.appendChild(monitor1);
 
-	var monitor2 = new HAF.Monitor.Draw(this._engine, [220, 100], {textColor:"#aaa"}).getContainer();
+	var monitor2 = new HAF.Monitor.Draw(this._engine, [220, 100], {textColor:"#aaa", chart:chart}).getContainer();
 	monitor2.style.position = "absolute";
 	monitor2.style.left = "0px";
 	monitor2.style.top = monitor1.offsetHeight + "px";

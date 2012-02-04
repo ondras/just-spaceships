@@ -236,7 +236,8 @@ HAF.Monitor = OZ.Class();
 HAF.Monitor.prototype.init = function(engine, size, event, options) {
 	this._size = size;
 	this._options = {
-		textColor: "#000"
+		textColor: "#000",
+		chart: true
 	};
 	for (var p in options) { this._options[p] = options[p]; }
 	this._canvas = OZ.DOM.elm("canvas", {width:size[0], height:size[1], className:"monitor"});
@@ -271,6 +272,7 @@ HAF.Monitor.prototype._draw = function() {
 }
 
 HAF.Monitor.prototype._drawSet = function(index, color) {
+	if (!this._options.chart) { return; }
 	this._ctx.beginPath();
 	var i = this._data.length;
 	var w = this._size[0];
@@ -325,7 +327,7 @@ HAF.Monitor.Sim.prototype.init = function(engine, size, options) {
 HAF.Monitor.Sim.prototype._event = function(e) {
 	var frac = e.data.changed/e.data.all;
 	frac *= (this._size[1]-1);
-	this._data.push([e.data.delay, e.data.time, frac, e.data.changed, e.data.all]);
+	this._data.push([e.data.delay, e.data.time, Math.round(frac), e.data.changed, e.data.all]);
 	HAF.Monitor.prototype._event.call(this, e);
 }
 

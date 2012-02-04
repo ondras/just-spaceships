@@ -14,6 +14,7 @@ Weapon.Projectile.prototype.init = function(game, weapon, position, velocity) {
 	var angle = Math.PI/2 + Math.atan2(this._phys.velocity[1], this._phys.velocity[0]);
 	
 	var image = HAF.Sprite.get("img/plasma3.png", size, angle, false);
+//	var image = HAF.Sprite.get("img/plasma3.png", size, 0, true);
 	HAF.Sprite.prototype.init.call(this, image, size);
 	
 	this._game.getEngine().addActor(this, "fx");
