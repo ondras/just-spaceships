@@ -40,8 +40,8 @@ Pilot.AI.prototype.setTarget = function(target) {
 Pilot.AI.prototype.setRandomTarget = function() {
 	var ships = this._game.getShips();
 	var avail = [];
-	for (var i=0;i<ships.length;i++) {
-		var ship = ships[i];
+	for (var id in ships) {
+		var ship = ships[id];
 		if (ship == this._ship) { continue; }
 		avail.push(ship);
 	}

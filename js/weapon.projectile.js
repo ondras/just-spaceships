@@ -45,8 +45,8 @@ Weapon.Projectile.prototype.tick = function(dt) {
 	} else { /* check targets */
 		var thisShip = this._weapon.getShip();
 		var ships = this._game.getShips();
-		for (var i=0;i<ships.length;i++) {
-			var ship = ships[i];
+		for (var id in ships) {
+			var ship = ships[id];
 			if (ship == thisShip) { continue; }
 			if (ship.collidesWith(this._phys.position)) {
 				ship.damage(this._weapon);

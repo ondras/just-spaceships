@@ -4,10 +4,6 @@ if (!Date.now) {
 
 var HAF = {};
 
-HAF.MODE_DIRECT			= 0;
-HAF.MODE_OFFSCREEN		= 1;
-HAF.MODE_DOUBLEBUFFER	= 2;
-
 /**
  * @class Base animation director
  */
@@ -28,10 +24,10 @@ HAF.Engine.prototype.init = function(size,  options) {
 	this._running = false;
 	this._container = OZ.DOM.elm("div", {id:this._options.id, position:"relative"});
 	this._canvases = {};
-	this._draw = this._draw.bind(this);
-	this._tick = this._tick.bind(this);
+	this.draw = this.draw.bind(this);
+	this.tick = this.tick.bind(this);
 	
-	this._mode = HAF.MODE_DIRECT;
+	this.setSize(size || [0, 0]);
 
 	var prefixes = ["", "moz", "webkit", "ms"];
 	var ok = false;
@@ -43,9 +39,6 @@ HAF.Engine.prototype.init = function(size,  options) {
 			break;
 		}
 	}
-	
-	this.setSize(size || [0, 0]);
-
 	if (!ok) { 
 		this._schedule = function(cb) {
 			setTimeout(cb, 1000/60); /* 60 fps */
@@ -71,11 +64,6 @@ HAF.Engine.prototype.isRunning = function() {
 	return this._running;
 }
 
-HAF.Engine.prototype.setMode = function(mode) {
-	this._mode = mode;
-	return this;
-}
-
 HAF.Engine.prototype.getContainer = function() {
 	return this._container;
 }
@@ -84,12 +72,9 @@ HAF.Engine.prototype.addCanvas = function(id) {
 	var canvas = OZ.DOM.elm("canvas", {position:"absolute"});
 	canvas.width = this._size[0];
 	canvas.height = this._size[1];
-	var second = canvas.cloneNode(false);
 	var obj = {
 		canvas: canvas,
 		ctx: canvas.getContext("2d"),
-		second: second,
-		secondCtx: second.getContext("2d"),
 		id: id,
 		dirty: false,
 		actors: []
@@ -129,8 +114,8 @@ HAF.Engine.prototype.start = function() {
 	var ts = Date.now();
 	this._ts.tick = ts;
 	this._ts.draw = ts;
-	this._tick();
-	this._draw();
+	this.tick();
+	this.draw();
 }
 
 HAF.Engine.prototype.stop = function() {
@@ -141,10 +126,10 @@ HAF.Engine.prototype.stop = function() {
 /**
  * (Physics) Time step
  */
-HAF.Engine.prototype._tick = function() {
+HAF.Engine.prototype.tick = function() {
 	if (!this._running) { return; }
 	
-	setTimeout(this._tick, 1000/this._options.fps);
+	setTimeout(this.tick, 1000/this._options.fps);
 
 	var ts1 = Date.now();
 	var dt = ts1 - this._ts.tick;
@@ -173,10 +158,10 @@ HAF.Engine.prototype._tick = function() {
 /**
  * Drawing time step
  */
-HAF.Engine.prototype._draw = function() {
+HAF.Engine.prototype.draw = function() {
 	if (!this._running) { return; }
 	
-	this._schedule.call(window, this._draw); /* schedule next tick */
+	this._schedule.call(window, this.draw); /* schedule next tick */
 	var ts1 = Date.now();
 	var dt = ts1 - this._ts.draw;
 	this._ts.draw = ts1;
@@ -188,41 +173,9 @@ HAF.Engine.prototype._draw = function() {
 		/* at least one actor changed; redraw canvas */
 		obj.dirty = false;
 		var actors = obj.actors;
-		
-		switch (this._mode) {
-			case HAF.MODE_DIRECT:
-				obj.ctx.clearRect(0, 0, this._size[0], this._size[1]); /* clear canvas */
-				var i = actors.length; 
-				while (i--) { actors[i].draw(obj.ctx); }
-			break;
-			
-			case HAF.MODE_OFFSCREEN:
-				obj.ctx.clearRect(0, 0, this._size[0], this._size[1]); /* clear canvas */
-				var i = actors.length; 
-				var canvas = obj.canvas;
-				var next = canvas.nextSibling;
-				var parent = canvas.parentNode;
-				parent.removeChild(canvas);
-				while (i--) { actors[i].draw(obj.ctx); }
-				parent.insertBefore(canvas, next);
-			break;
-
-			case HAF.MODE_DOUBLEBUFFER:
-				obj.secondCtx.clearRect(0, 0, this._size[0], this._size[1]); /* clear canvas */
-				var i = actors.length; 
-				while (i--) { actors[i].draw(obj.secondCtx); }
-				obj.canvas.parentNode.replaceChild(obj.second, obj.canvas);
-				
-				var tmp = obj.canvas;
-				obj.canvas = obj.second;
-				obj.second = tmp;
-				
-				tmp = obj.ctx;
-				obj.ctx = obj.secondCtx;
-				obj.secondCtx = tmp;
-			break;
-		}
-		
+		var i = actors.length; 
+		obj.ctx.clearRect(0, 0, this._size[0], this._size[1]); /* clear canvas */
+		while (i--) { actors[i].draw(obj.ctx); }
 	}
 	
 	var ts2 = Date.now();

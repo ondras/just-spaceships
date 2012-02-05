@@ -38,7 +38,8 @@ Ship.prototype.init = function(game, options) {
 		maxForce: 500, /* pixels per weight per second^2 in vacuum */
 		maxTorque: 150 * Math.PI/180, /* degrees per second */
 		mass: 1,
-		position: [this._size[0]/2, this._size[1]/2]
+		position: [this._size[0]/2, this._size[1]/2],
+		id: Math.random().toString().replace(/\D/g, "")
 	};
 	for (var p in options) { this._options[p] = options[p]; }
 
@@ -71,9 +72,13 @@ Ship.prototype.init = function(game, options) {
 	}
 	this._hp = Math.round(this._phys.mass * 1000);
 	
-	this._pilot = new Pilot.AI(this._game, this, "");
+	this._pilot = null;
 	this._mini = new Ship.Mini(game, def.color);
 	game.getEngine().addActor(this, "ships");
+}
+
+Ship.prototype.setPilot = function(pilot) {
+	this._pilot = pilot;
 }
 
 Ship.prototype.getPilot = function() {
@@ -92,9 +97,13 @@ Ship.prototype.getPhys = function() {
 	return this._phys;
 }
 
+Ship.prototype.getId = function() {
+	return this._options.id;
+}
+
 Ship.prototype.tick = function(dt) {
 	var changed = HAF.AnimatedSprite.prototype.tick.call(this, dt);
-	this._pilot.act();
+	if (this._pilot) { this._pilot.act(); }
 
 	dt /= 1000;
 
@@ -108,7 +117,7 @@ Ship.prototype.tick = function(dt) {
 }
 
 Ship.prototype.draw = function(context) {
-	if (!this._game.inPort(this._sprite.position, 100)) { if (this instanceof Ship.Player) return; } /* do not draw outside of port */
+	if (!this._game.inPort(this._sprite.position, 100)) { return; } /* do not draw outside of port */
 		
 	var offset = this._game.getOffset();
 	var tmp = [0, 0];
