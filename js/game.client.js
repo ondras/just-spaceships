@@ -110,7 +110,9 @@ Game.Client.prototype._initDebug = function(chart) {
 }
 
 Game.Client.prototype._initPlayer = function(name) {
-	this._player = this._addShip(Ship.Player);
+	this._player = new Ship.Player(this);
+	this._ships[this._player.getId()] = this._player;
+
 	this._player.setPilot(new Pilot.UI(this, this._player, name));
 
 }

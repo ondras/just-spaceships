@@ -26,6 +26,9 @@ Array.prototype.random = function() {
  * Base abstract game class
  */
 var Game = OZ.Class();
+Game.MSG_SYNC	= 0; /* ship state sync */
+Game.MSG_CREATE	= 1; /* new ship(s) created */
+Game.MSG_CHANGE	= 2; /* ship params changed */
 Game.prototype.init = function(name) {
 	this._size = [3000, 3000];
 	this._ships = {};
@@ -62,8 +65,8 @@ Game.prototype._shipDeath = function(e) {
 	delete this._ships[e.target.getId()];
 }
 
-Game.prototype._addShip = function(ctor, options) {
-	var ship = new ctor(this, options);
+Game.prototype._addShip = function(options) {
+	var ship = new Ship(this, options);
 	this._ships[ship.getId()] = ship;
 	return ship;
 }

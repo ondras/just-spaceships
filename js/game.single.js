@@ -28,7 +28,7 @@ Game.Single.prototype._addRandomShip = function() {
 		Math.random()*this._size[1]
 	];
 	
-	var ship = this._addShip(Ship, {type:color, mass:mass, position:position});
+	var ship = this._addShip({type:color, mass:mass, position:position});
 	var pilot = new Pilot.AI(this, ship, "");
 	ship.setPilot(pilot);
 	pilot.setRandomTarget();
