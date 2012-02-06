@@ -27,7 +27,7 @@ Game.Setup.prototype._build = function() {
 	
 	var label = OZ.DOM.elm("label", {innerHTML:"Ship color: "});
 	this._dom.color = OZ.DOM.elm("select");
-	var colors = ["red", "green", "yellow", "blue", "violet"];
+	var colors = ["red", "green", "yellow", "blue", "purple"];
 	for (var i=0;i<colors.length;i++) {
 		var c = colors[i];
 		var o = OZ.DOM.elm("option", {value:c, innerHTML:c});
@@ -41,6 +41,8 @@ Game.Setup.prototype._build = function() {
 	var buttons = [];
 	for (var i=0;i<labels.length;i++) {
 		var button = this._buildButton(labels[i], this._clickShip);
+		var img = OZ.DOM.elm("img", {width:"64px", height:"64px"});
+		button.insertBefore(img, button.firstChild);
 		buttons.push(button);
 	}
 	this._dom.ships = this._buildSet(buttons);
@@ -54,9 +56,9 @@ Game.Setup.prototype._build = function() {
 	document.body.appendChild(container);
 }
 
-Game.Setup.prototype._buildButton = function(content, cb) {
+Game.Setup.prototype._buildButton = function(innerHTML, cb) {
 	var button = OZ.DOM.elm("button");
-	button.innerHTML = content;
+	button.innerHTML = innerHTML;
 	OZ.Event.add(button, "click", cb.bind(this));
 	return button;
 }
@@ -94,6 +96,11 @@ Game.Setup.prototype._changeColor = function(e) {
 Game.Setup.prototype._selectColor = function(color) {
 	this._dom.color.value = color;
 	this._shipColor = color;
+	
+	for (var i=0;i<Ship.types.length;i++) {
+		var image = Ship.getImageName(color, i) + "_000.png";
+		this._dom.ships.getElementsByTagName("button")[i].getElementsByTagName("img")[0].src = image;
+	}
 }
 
 Game.Setup.prototype._play = function(e) {

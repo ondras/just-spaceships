@@ -26,6 +26,7 @@ Game.Server.prototype.start = function() {
 
 Game.Server.prototype.onconnect = function(client, headers) {
 	this._clients.push(client);
+	/* FIXME pridat info o nazvech a typech lodi */
 	var state = this._getState();
 	var data = {
 		type: Game.MSG_CREATE,
@@ -66,6 +67,7 @@ Game.Server.prototype.onmessage = function(client, data) {
 		break;
 	}
 	
+	/* forward message to all other clients */
 	for (var i=0;i<this._clients.length;i++) {
 		var id = this._clients[i];
 		this._ws.send(id, data);
@@ -76,7 +78,7 @@ Game.Server.prototype.onidle = function() {
 	this._engine.tick();
 	var ts = Date.now();
 	
-	if (ts - this._ts > 500) { /* FIXME constant */
+	if (ts - this._ts > 500) { /* FIXME constant */ /* send sync info to all clients */
 		this._ts = ts;
 		var state = this._getState();
 		var data = {

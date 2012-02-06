@@ -22,13 +22,12 @@ Game.Single.prototype._shipDeath = function(e) {
 
 Game.Single.prototype._addRandomShip = function() {
 	var color = ["purple", "green", "red", "blue"].random();
-	var mass = 0.5 + Math.random();
 	var position = [
 		Math.random()*this._size[0],
 		Math.random()*this._size[1]
 	];
 	
-	var ship = this._addShip({type:color, mass:mass, position:position});
+	var ship = this._addShip({color:color, position:position});
 	var pilot = new Pilot.AI(this, ship, "");
 	ship.setPilot(pilot);
 	pilot.setRandomTarget();

@@ -1,31 +1,48 @@
 var Ship = OZ.Class().extend(HAF.AnimatedSprite);
 
-Ship.types = {
+Ship.colors = {
 	yellow: {
-		image: "Gaalian_Ranger_64",
+		image: "Gaalian",
 		color: "#cc0",
-		frames: 82
+		frames: [100, 82, 100]
 	},
 	blue: {
-		image: "People_Ranger_64",
+		image: "People",
 		color: "#00f",
-		frames: 99
+		frames: [88, 99, 100]
 	},
 	red: {
-		image: "Maloc_Pirate_64",
+		image: "Maloc",
 		color: "#f00",
-		frames: 99
+		frames: [99, 149, 137]
 	},
 	purple: {
-		image: "Feiyan_Ranger_64",
+		image: "Feiyan",
 		color: "#f0f",
-		frames: 100
+		frames: [100, 100, 100]
 	},
 	green: {
-		image: "Peleng_Pirate_64",
+		image: "Peleng",
 		color: "#0f0",
-		frames: 149
+		frames: [149, 100, 100]
 	}
+};
+Ship.types = [
+	{
+		image: "Pirate",
+		mass: 0.7
+	},
+	{
+		image: "Ranger",
+		mass: 1
+	},
+	{
+		image: "Liner",
+		mass: 1.3
+	}
+];
+Ship.getImageName = function(color, type) {
+	return "img/ships/" + this.colors[color].image + "_" + this.types[type].image;
 }
 
 Ship.prototype.init = function(game, options) {
@@ -33,26 +50,31 @@ Ship.prototype.init = function(game, options) {
 	this._size = game.getSize();
 
 	this._options = {
-		type: "yellow",
+		color: "yellow",
+		type: 2,
 		size: [64, 64],
 		maxForce: 500, /* pixels per weight per second^2 in vacuum */
 		maxTorque: 150 * Math.PI/180, /* degrees per second */
-		mass: 1,
+		mass: null,
 		position: [this._size[0]/2, this._size[1]/2],
 		id: Math.random().toString().replace(/\D/g, "")
 	};
 	for (var p in options) { this._options[p] = options[p]; }
+	
+	/* take mass from type */
+	if (!this._options.mass) { this._options.mass = Ship.types[this._options.type].mass; }
+	
+	var def = Ship.colors[this._options.color];
+	var frames = def.frames[this._options.type];
+	var largeSize = [this._options.size[0], this._options.size[1]*frames];
+	var image = Ship.getImageName(this._options.color, this._options.type) + "_64.png";
 
-	var def = Ship.types[this._options.type];
-	var largeSize = [this._options.size[0], this._options.size[1]*def.frames];
-	var image = HAF.Sprite.get("img/"+def.image+".png", largeSize, 0, true);
-	HAF.AnimatedSprite.prototype.init.call(this, image, this._options.size, def.frames);
+	image = HAF.Sprite.get(image, largeSize, 0, true);
+	HAF.AnimatedSprite.prototype.init.call(this, image, this._options.size, frames);
 	
 	this._animation.fps = 10;
 	this._deathTime = 0;
 	
-	this._tmp = 0; /* FIXME */
-
 	this._weapon = new Weapon(this._game, this);	
 	this._alive = true;
 	this._control = {
@@ -191,14 +213,11 @@ Ship.prototype.showLabel = function(text, options) {
 
 Ship.prototype._tickWeapons = function() {
 	if (this._alive && this._control.fire && this._weapon.isReady()) { /* fire */
-		this._tmp = (this._tmp+1)%2;
-		var angle = (this._tmp ? -1 : 1) * Math.PI/4;
-		angle += this._phys.orientation;
 		var dist = this._sprite.size[0]/3;
 		
 		var pos = [
-			this._phys.position[0] + dist * Math.cos(angle),
-			this._phys.position[1] + dist * Math.sin(angle)
+			this._phys.position[0] + dist * Math.cos(this._phys.orientation),
+			this._phys.position[1] + dist * Math.sin(this._phys.orientation)
 		];
 		this._weapon.fire(pos);
 	}
