@@ -1,12 +1,12 @@
-Pilot.UI = OZ.Class().extend(Pilot);
+Game.Keyboard = OZ.Class();
 
-Pilot.UI.prototype.init = function(game, ship, name) {
-	Pilot.prototype.init.call(this, game, ship, name);
+Game.Keyboard.prototype.init = function(control) {
+	this._control = control;
 	OZ.Event.add(window, "keydown", this._keydown.bind(this));
 	OZ.Event.add(window, "keyup", this._keyup.bind(this));
 }
 
-Pilot.UI.prototype._keydown = function(e) {
+Game.Keyboard.prototype._keydown = function(e) {
 	switch (e.keyCode) {
 		case 17:
 			this._control.fire = true;
@@ -26,11 +26,12 @@ Pilot.UI.prototype._keydown = function(e) {
 		case 40:
 			this._control.engine = -1;
 		break;
-		
 	}
+	/* FIXME jen pri zmene? */
+	this.dispatch("Keyboard-change");
 }
 
-Pilot.UI.prototype._keyup = function(e) {
+Game.Keyboard.prototype._keyup = function(e) {
 	switch (e.keyCode) {
 		case 17:
 			this._control.fire = false;
@@ -47,4 +48,6 @@ Pilot.UI.prototype._keyup = function(e) {
 		break;
 		
 	}
+	/* FIXME jen pri zmene? */
+	this.dispatch("Keyboard-change");
 }

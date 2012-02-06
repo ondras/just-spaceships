@@ -37,7 +37,7 @@ Game.Setup.prototype._build = function() {
 	label.appendChild(this._dom.color);
 	container.appendChild(label);
 
-	var labels = ["a", "b", "c"];
+	var labels = ["More maneuverable", "Normal", "More hitpoints"];
 	var buttons = [];
 	for (var i=0;i<labels.length;i++) {
 		var button = this._buildButton(labels[i], this._clickShip);
@@ -106,10 +106,12 @@ Game.Setup.prototype._selectColor = function(color) {
 Game.Setup.prototype._play = function(e) {
 	OZ.DOM.clear(document.body);
 	var game = null;
+	var ship = {name:"FIXME"};
+	
 	if (OZ.DOM.hasClass(this._dom.single, "active")) {
-		game = new Game.Single(name);
+		game = new Game.Single(ship);
 	} else {
-		game = new Game.Multi(name);
+		game = new Game.Multi(ship);
 	}
 	
 	game.start();

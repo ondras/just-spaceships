@@ -2,15 +2,15 @@
  * Client-side (browser) game class
  */
 Game.Client = OZ.Class().extend(Game);
-Game.Client.prototype.init = function(name) {
+Game.Client.prototype.init = function(playerShipOptions) {
 	this._port = [0, 0];
 	this._offset = [0, 0];
 	Game.prototype.init.call(this);
 
 	document.body.appendChild(this._engine.getContainer());
 	this._player = null;
-	this._initPlayer(name);
 	this._initDebug(true);
+	this._initPlayer(playerShipOptions);
 }
 
 Game.Client.prototype.start = function() {
@@ -28,15 +28,6 @@ Game.Client.prototype.getOffset = function() {
 
 Game.Client.prototype.getMap = function() {
 	return this._map;
-}
-
-Game.Client.prototype.setOffset = function(offset) {
-	this._offset[0] = offset[0].mod(this._size[0]);
-	this._offset[1] = offset[1].mod(this._size[1]);
-	this._engine.setDirty("bg");
-	this._engine.setDirty("ships");
-	this._engine.setDirty("map");
-	return this._offset;
 }
 
 /**
@@ -93,11 +84,36 @@ Game.Client.prototype._initDebug = function(chart) {
 	document.body.appendChild(monitor2);
 }
 
-Game.Client.prototype._initPlayer = function(name) {
-	this._player = new Ship.Player(this);
-	this._ships[this._player.getId()] = this._player;
+Game.Client.prototype._initPlayer = function(options) {
+	this._player = this._addShip(options);
+	/* adjust viewport when position changes */
+	OZ.Event.add(this._player, "ship-tick", this._playerTick.bind(this));
+}
 
-	this._player.setPilot(new Pilot.UI(this, this._player, name));
+Game.Client.prototype._playerTick = function(e) {
+	var position = this._player.getPhys().position;
+	var limit = 200;
 
+	var offsetChanged = false;
+
+	for (var i=0;i<2;i++) {
+		var portPosition = Math.round(position[i] - this._offset[i]).mod(this._size[i]);
+
+		if (portPosition < limit) {
+			offsetChanged = true;
+			this._offset[i] -= limit - portPosition;
+		} else if (portPosition > this._port[i]-limit) {
+			offsetChanged = true;
+			this._offset[i] += portPosition - (this._port[i]-limit);
+		}
+	}
+	
+	if (offsetChanged) { 
+		this._offset[0] = this._offset[0].mod(this._size[0]);
+		this._offset[1] = this._offset[1].mod(this._size[1]);
+		this._engine.setDirty("bg");
+		this._engine.setDirty("ships");
+		this._engine.setDirty("map");
+	}
 }
 

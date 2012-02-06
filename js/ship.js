@@ -44,6 +44,19 @@ Ship.types = [
 Ship.getImageName = function(color, type) {
 	return "img/ships/" + this.colors[color].image + "_" + this.types[type].image;
 }
+Ship.random = function() {
+	var colors = [];
+	for (var p in this.colors) { colors.push(p); }
+	var color = colors.random();
+	
+	var type = Math.floor(this.types.length * Math.random());
+
+	var ship = {
+		color: color,
+		type: type
+	}
+	return ship;
+}
 
 Ship.prototype.init = function(game, options) {
 	this._game = game;
@@ -51,7 +64,7 @@ Ship.prototype.init = function(game, options) {
 
 	this._options = {
 		color: "yellow",
-		type: 2,
+		type: 1,
 		size: [64, 64],
 		maxForce: 500, /* pixels per weight per second^2 in vacuum */
 		maxTorque: 150 * Math.PI/180, /* degrees per second */
@@ -134,6 +147,8 @@ Ship.prototype.tick = function(dt) {
 	changed = this._tickMovement(dt) || changed;
 
 	if (this._alive && changed) { this._mini.setPosition(this._sprite.position); } /* update mini */
+
+	this.dispatch("ship-tick");
 
 	return changed;
 }

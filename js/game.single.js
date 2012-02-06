@@ -21,15 +21,19 @@ Game.Single.prototype._shipDeath = function(e) {
 }
 
 Game.Single.prototype._addRandomShip = function() {
-	var color = ["purple", "green", "red", "blue"].random();
-	var position = [
+	var opt = Ship.random();
+	opt.position = [
 		Math.random()*this._size[0],
 		Math.random()*this._size[1]
 	];
 	
-	var ship = this._addShip({color:color, position:position});
+	var ship = this._addShip(opt);
 	var pilot = new Pilot.AI(this, ship, "");
 	ship.setPilot(pilot);
 	pilot.setRandomTarget();
 }
 
+Game.Single.prototype._initPlayer = function(options) {
+	Game.Client.prototype._initPlayer.call(this, options);
+	new Game.Keyboard(this._player.getControl());
+}
