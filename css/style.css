@@ -5,12 +5,42 @@ body {
 
 #setup {
 	width: 600px;
-	margin: auto;
+	margin: 2em auto;
 	text-align: center;
+}
+
+#setup .button-set button {
+	margin: 0px;
+	padding: 1em;
+	border-width: 1px 0px 1px 1px;
+	border-style: solid;
+	border-color: gray;
+	background-color: #ccc;
+}
+
+
+#setup .button-set button:hover {
+	background-color: #669;
+}
+
+#setup .button-set button.active {
+	background-color: #33a;
+	color: white;
+	font-weight: bold;
+}
+
+#setup .button-set button:first-child {
+	border-radius: 20px 0px 0px 20px;
+}
+
+#setup .button-set button:last-child {
+	border-right-width: 1px;
+	border-radius: 0px 20px 20px 0px;
 }
 
 #setup button {
 	width: 180px;
+	cursor: pointer;
 }
 
 #setup button img {

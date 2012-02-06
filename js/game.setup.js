@@ -103,20 +103,6 @@ Game.Setup.prototype._selectColor = function(color) {
 	}
 }
 
-Game.Setup.prototype._play = function(e) {
-	OZ.DOM.clear(document.body);
-	var game = null;
-	var ship = {name:"FIXME"};
-	
-	if (OZ.DOM.hasClass(this._dom.single, "active")) {
-		game = new Game.Single(ship);
-	} else {
-		game = new Game.Multi(ship);
-	}
-	
-	game.start();
-}
-
 Game.Setup.prototype._clickShip = function(e) {
 	var button = OZ.Event.target(e);
 	var buttons = button.parentNode.getElementsByTagName("button");
@@ -130,3 +116,22 @@ Game.Setup.prototype._selectShip = function(index) {
 	this._activateButton(buttons[index]);
 	this._ship = index;
 }
+
+Game.Setup.prototype._play = function(e) {
+	OZ.DOM.clear(document.body);
+	var game = null;
+	var ship = {
+		name:this._dom.name.value,
+		color:this._dom.color.value,
+		type:this._ship
+	};
+	
+	if (OZ.DOM.hasClass(this._dom.single, "active")) {
+		game = new Game.Single(ship);
+	} else {
+		game = new Game.Multi(ship);
+	}
+	
+	game.start();
+}
+
