@@ -9,6 +9,7 @@
 		<script src="js/game.client.js"></script>
 		<script src="js/game.single.js"></script>
 		<script src="js/game.multi.js"></script>
+		<script src="js/game.setup.js"></script>
 		<script src="js/audio.js"></script>
 		<script src="js/pilot.js"></script>
 		<script src="js/pilot.ui.js"></script>
@@ -25,25 +26,5 @@
 		<script src="js/label.js"></script>
 		<link rel="stylesheet" type="text/css" href="css/style.css" />
 	</head>
-	<body>
-		<table>
-			<tbody>
-				<tr>
-					<td>Name:</td>
-					<td><input id="name" type="text" value="Human pilot" /></td>
-				</tr>
-				<tr>
-					<td>Mode:</td>
-					<td>
-						<input id="mode-single" checked="checked" type="radio" name="mode" /> Single
-						<input id="mode-multi" type="radio" name="mode" /> Multi
-					</td>
-				</tr>
-				<tr>
-					<td></td>
-					<td><input type="button" onclick="Game.Client.setup()" value="Play!" /></td>
-				</tr>
-			</tbody>
-		</table>
-	</body>
+	<body onload="new Game.Setup()"></body>
 </html>

@@ -2,22 +2,6 @@
  * Client-side (browser) game class
  */
 Game.Client = OZ.Class().extend(Game);
-
-Game.Client.setup = function() {
-	var single = OZ.$("mode-single");
-	var multi = OZ.$("mode-multi");
-	var name = OZ.$("name").value;
-	OZ.DOM.clear(document.body);
-	var game = null;
-	if (single.checked) {
-		game = new Game.Single(name);
-	} else {
-		game = new Game.Multi(name);
-	}
-	
-	game.start();
-}
-
 Game.Client.prototype.init = function(name) {
 	this._port = [0, 0];
 	this._offset = [0, 0];
