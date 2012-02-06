@@ -1,5 +1,8 @@
 body { 
-	margin: 0px; 
+	margin: 0px;
+	color: #ccc; 
+	font-family: sans-serif;
+	background-image: url(../img/bg.png);
 	overflow: hidden;
 }
 
@@ -9,13 +12,13 @@ body {
 	text-align: center;
 }
 
-#setup .button-set button {
+#setup button {
 	margin: 0px;
 	padding: 1em;
 	border-width: 1px 0px 1px 1px;
 	border-style: solid;
-	border-color: gray;
-	background-color: #ccc;
+	border-color: #000;
+	background-color: #aaa;
 }
 
 #setup .button-set {
@@ -23,13 +26,15 @@ body {
 }
 
 #setup .button-set button:hover {
-	background-color: #777;
+	box-shadow: inset 0px 0px 3px 3px #555;
 }
 
 #setup .button-set button.active {
 	background-color: #555;
 	color: white;
 	font-weight: bold;
+	cursor: default;
+	box-shadow: inset 0px 0px 3px 3px #333;
 }
 
 #setup .button-set button:first-child {
