@@ -10,24 +10,12 @@ Label.prototype.init = function(game, text, position, options) {
 		opacity: 0.8
 	}
 	for (var p in options) { this._options[p] = options[p]; }
+	this._canvas = null;
+	this._text = text;
 	this._position = position;
 	this._pxPosition = [0, 0];
 	this._time = 0;
 	
-	this._canvas = OZ.DOM.elm("canvas", {height:this._options.size});
-	var font = "bold " + this._options.size + "px sans-serif";
-	var context = this._canvas.getContext("2d");
-	context.font = font;
-	this._canvas.width = context.measureText(text).width;
-	
-	context.globalAlpha = this._options.opacity;
-	context.font = font;
-	context.textBaseline = "top";
-	context.fillStyle = this._options.color;
-	context.fillText(text, 0, 0);
-	
-	this._position[0] -= this._canvas.width/2;
-	this._position[1] -= this._canvas.height/2;
 	
 	this._game.getEngine().addActor(this, "fx");
 }
@@ -53,11 +41,26 @@ Label.prototype.tick = function(dt) {
 	return changed;
 }
 
-Label.prototype.draw = function(context) {	
+Label.prototype.draw = function(context) {
+	if (!this._canvas) {
+		this._canvas = OZ.DOM.elm("canvas", {height:this._options.size});
+		var font = "bold " + this._options.size + "px sans-serif";
+		var context = this._canvas.getContext("2d");
+		context.font = font;
+		this._canvas.width = context.measureText(this._text).width;
+	
+		context.globalAlpha = this._options.opacity;
+		context.font = font;
+		context.textBaseline = "top";
+		context.fillStyle = this._options.color;
+		context.fillText(this._text, 0, 0);
+	}
+
+	var canvasSize = [this._canvas.width, this._canvas.height];
 	var offset = this._game.getOffset();
 	var tmp = [0, 0];
 	for (var i=0;i<2;i++) {
-		tmp[i] = (this._pxPosition[i] - offset[i]).mod(this._size[i]);
+		tmp[i] = (this._pxPosition[i] - offset[i] - canvasSize[i]/2).mod(this._size[i]);
 	}
 	
 	context.drawImage(this._canvas, tmp[0], tmp[1]);

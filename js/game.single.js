@@ -3,16 +3,15 @@
  */
 Game.Single = OZ.Class().extend(Game.Client);
 
-Game.Single.prototype.init = function(name) {
+Game.Single.prototype.init = function(name, enemies) {
 	Game.Client.prototype.init.call(this, name);
-	this._initShips();
+	this._initShips(enemies);
 }
 
-Game.Single.prototype._initShips = function() {
-	this._addRandomShip();
-	this._addRandomShip();
-	this._addRandomShip();
-	this._addRandomShip();
+Game.Single.prototype._initShips = function(enemies) {
+	for (var i=0;i<enemies;i++) {
+		this._addRandomShip();
+	}
 }
 
 Game.Single.prototype._shipDeath = function(e) {

@@ -4,7 +4,11 @@ Game.Setup.prototype.init = function() {
 	this._ship = null;
 	
 	this._build();
-	this._clickSingle();
+	if (localStorage.mode == "multi") {
+		this._clickMulti();
+	} else {
+		this._clickSingle();
+	}
 	this._selectColor("yellow");
 	this._selectShip(1);
 }
@@ -12,16 +16,19 @@ Game.Setup.prototype.init = function() {
 Game.Setup.prototype._build = function() {
 	var container = OZ.DOM.elm("div", {id:"setup"});
 	
+	var label = OZ.DOM.elm("label", {innerHTML:"Name: "});
+	this._dom.name = OZ.DOM.elm("input", {type:"text"});
+	this._dom.name.value = localStorage.name || "Human pilot #" + Math.round(Math.random()*100+1);
+	label.appendChild(this._dom.name);
+	container.appendChild(label);
+	
+	container.appendChild(OZ.DOM.elm("hr"));
+
 	this._dom.single = this._buildButton("Singleplayer", this._clickSingle);
 	this._dom.multi = this._buildButton("Multiplayer", this._clickMulti);
 	container.appendChild(this._buildSet([this._dom.single, this._dom.multi]));
-	
-	container.appendChild(OZ.DOM.elm("hr"));
-	
-	var label = OZ.DOM.elm("label", {innerHTML:"Name: "});
-	this._dom.name = OZ.DOM.elm("input", {type:"text", value:"Human pilot #" + Math.round(Math.random()*100+1)});
-	label.appendChild(this._dom.name);
-	container.appendChild(label);
+	this._dom.variable = OZ.DOM.elm("div");
+	container.appendChild(this._dom.variable);
 	
 	container.appendChild(OZ.DOM.elm("hr"));
 	
@@ -54,6 +61,19 @@ Game.Setup.prototype._build = function() {
 	container.appendChild(play);
 
 	document.body.appendChild(container);
+	
+	this._dom.singleDetails = OZ.DOM.elm("div");
+	var label = OZ.DOM.elm("label", {innerHTML:"Enemies: "});
+	this._dom.enemies = OZ.DOM.elm("input", {type:"text", value:"4", size:"2"});
+	label.appendChild(this._dom.enemies);
+	this._dom.singleDetails.appendChild(label);
+
+	this._dom.multiDetails = OZ.DOM.elm("div");
+	var label = OZ.DOM.elm("label", {innerHTML:"Server URL: "});
+	this._dom.url = OZ.DOM.elm("input", {type:"text"});
+	this._dom.url.value = localStorage.url || "ws://localhost:8888/space";
+	label.appendChild(this._dom.url);
+	this._dom.multiDetails.appendChild(label);
 }
 
 Game.Setup.prototype._buildButton = function(innerHTML, cb) {
@@ -83,10 +103,14 @@ Game.Setup.prototype._activateButton = function(button) {
 
 Game.Setup.prototype._clickSingle = function(e) {
 	this._activateButton(this._dom.single);
+	OZ.DOM.clear(this._dom.variable);
+	this._dom.variable.appendChild(this._dom.singleDetails);
 }
 
 Game.Setup.prototype._clickMulti = function(e) {
 	this._activateButton(this._dom.multi);
+	OZ.DOM.clear(this._dom.variable);
+	this._dom.variable.appendChild(this._dom.multiDetails);
 }
 
 Game.Setup.prototype._changeColor = function(e) {
@@ -125,11 +149,17 @@ Game.Setup.prototype._play = function(e) {
 		color:this._dom.color.value,
 		type:this._ship
 	};
+	localStorage.name = ship.name;
 	
 	if (OZ.DOM.hasClass(this._dom.single, "active")) {
-		game = new Game.Single(ship);
+		var enemies = parseInt(this._dom.enemies.value) || 3;
+		game = new Game.Single(ship, enemies);
+		localStorage.mode = "single";
 	} else {
-		game = new Game.Multi(ship);
+		var url = this._dom.url.value;
+		localStorage.url = url;
+		game = new Game.Multi(ship, url);
+		localStorage.mode = "multi";
 	}
 	
 	game.start();

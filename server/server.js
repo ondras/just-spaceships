@@ -3,7 +3,7 @@
 require.paths.unshift("/home/ondras/svn/v8cgi/lib");
 var FS = require("fs");
 
-/* FAKE ENVIRONMENT */
+/* mininal DOM environment */
 var nullElm = {
 	style: {},
 	appendChild: function() {},
@@ -16,18 +16,21 @@ var document = {
 var navigator = {userAgent:""};
 global.setTimeout = function() {};
 
-var files = ["oz", "haf", "game", "../server/game.server", "ship", "ship.mini", "weapon"];
-for (var i=0;i<files.length;i++) {
-	var f = new FS.File("../js/"+files[i]+".js");
-	system.stdout.writeLine(f);
+/* read all javascript files */
+var index = new FS.File("../index.html").open("r");
+var html = index.read().toString("utf-8");
+index.close();
+var scripts = html.match(/js\/.*?\.js/g);
+for (var i=0;i<scripts.length;i++) {
+	var f = new FS.File("../"+scripts[i]);
+	system.stdout.writeLine("Loading " + f);
 	eval(f.open("r").read().toString("utf-8"));
 }
-
-HAF.Engine.prototype.draw = function() {}
 /* */
 
+HAF.Engine.prototype.draw = function() {}
 
 var Server = require("websocket").Server;
 var ws = new Server("0.0.0.0", 8888);
-var game = new Game.Server(ws);
-game.start();
+new Game.Server(ws).start();
+

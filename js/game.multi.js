@@ -1,9 +1,10 @@
 Game.Multi = OZ.Class().extend(Game.Client);
 
-Game.Multi.prototype.init = function(name) {
+Game.Multi.prototype.init = function(name, url) {
 	Game.Client.prototype.init.call(this, name);
 
 	this._socket = null;
+	this._url = url;
 	this._control = {
 		torque: {}
 	}
@@ -11,9 +12,14 @@ Game.Multi.prototype.init = function(name) {
 
 Game.Multi.prototype.start = function() {
 	Game.Client.prototype.start.call(this);
-	this._socket = new (window.WebSocket || window.MozWebSocket)("ws://localhost:8888/space");
+	this._socket = new (window.WebSocket || window.MozWebSocket)(this._url);
 	OZ.Event.add(this._socket, "open", this._open.bind(this));
+	OZ.Event.add(this._socket, "close", this._close.bind(this));
 	OZ.Event.add(this._socket, "message", this._message.bind(this));
+}
+
+Game.Multi.prototype._close = function(e) {
+	alert("Connection closed: " + e.code + " " + e.reason);
 }
 
 Game.Multi.prototype._open = function(e) {
@@ -32,6 +38,8 @@ Game.Multi.prototype._open = function(e) {
 		},
 		phys: player.getPhys()
 	}
+	
+	this._send(Game.MSG_CREATE, data);
 }
 
 Game.Multi.prototype._message = function(e) {

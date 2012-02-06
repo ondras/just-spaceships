@@ -27,6 +27,7 @@ Game.Server.prototype.start = function() {
 
 Game.Server.prototype.onconnect = function(client, headers) {
 	this._clients.push(client);
+	this._clientShips.push(null);
 	var state = this._getState(true);
 	var data = {
 		type: Game.MSG_CREATE,
@@ -41,8 +42,11 @@ Game.Server.prototype.ondisconnect = function(client, code, message) {
 	if (index != -1) { 
 		this._clients.splice(index, 1); 
 		var ship = this._clientShips[index];
+		if (ship) {
+			system.stdout.writeLine("Destroying ship " + ship.getId() + " from disconnected client");
+			ship.die();
+		}
 		this._clientShips.splice(index, 1);
-		ship.die();
 	}
 }
 
@@ -52,8 +56,11 @@ Game.Server.prototype.onmessage = function(client, data) {
 		case Game.MSG_CREATE:
 			for (var id in parsed.data) {
 				if (id in this._ships) { /* FIXME */ continue; }
-				var ship = this._addShip({id:id});
 				var shipData = parsed.data[id];
+				var options = shipData.options;
+				options.id = id;
+				system.stdout.writeLine("Creating ship: " + JSON.stringify(options));
+				var ship = this._addShip(options);
 				this._merge(id, shipData);
 				
 				

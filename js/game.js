@@ -53,6 +53,10 @@ Game.prototype.getShips = function() {
 	return this._ships;
 }
 
+Game.prototype.inPort = function() {
+	return false;
+}
+
 Game.prototype._initEngine = function() {
 	this._engine = new HAF.Engine();
 	this._engine.addCanvas("bg");
