@@ -16,7 +16,7 @@ var document = {
 var navigator = {userAgent:""};
 global.setTimeout = function() {};
 
-var files = ["oz", "haf", "game", "../server/game.server", "ship", "ship.mini", "pilot", "weapon"];
+var files = ["oz", "haf", "game", "../server/game.server", "ship", "ship.mini", "weapon"];
 for (var i=0;i<files.length;i++) {
 	var f = new FS.File("../js/"+files[i]+".js");
 	system.stdout.writeLine(f);

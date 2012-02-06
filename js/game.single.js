@@ -28,12 +28,13 @@ Game.Single.prototype._addRandomShip = function() {
 	];
 	
 	var ship = this._addShip(opt);
-	var pilot = new Pilot.AI(this, ship, "");
-	ship.setPilot(pilot);
-	pilot.setRandomTarget();
+	var ai = new Game.AI(this, ship);
+	ai.setRandomTarget();
 }
 
 Game.Single.prototype._initPlayer = function(options) {
 	Game.Client.prototype._initPlayer.call(this, options);
+	
+	/* keyboard controls this ship */
 	new Game.Keyboard(this._player.getControl());
 }

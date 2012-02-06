@@ -71,13 +71,13 @@ Game.Client.prototype._resize = function() {
 }
 
 Game.Client.prototype._initDebug = function(chart) {
-	var monitor1 = new HAF.Monitor.Sim(this._engine, [220, 100], {textColor:"#aaa", chart:chart}).getContainer();
+	var monitor1 = new HAF.Monitor.Sim(this._engine, [220, 100], {textColor:"#888", chart:chart}).getContainer();
 	monitor1.style.position = "absolute";
 	monitor1.style.left = "0px";
 	monitor1.style.top = "0px";
 	document.body.appendChild(monitor1);
 
-	var monitor2 = new HAF.Monitor.Draw(this._engine, [220, 100], {textColor:"#aaa", chart:chart}).getContainer();
+	var monitor2 = new HAF.Monitor.Draw(this._engine, [220, 100], {textColor:"#888", chart:chart}).getContainer();
 	monitor2.style.position = "absolute";
 	monitor2.style.left = "0px";
 	monitor2.style.top = monitor1.offsetHeight + "px";
@@ -86,6 +86,7 @@ Game.Client.prototype._initDebug = function(chart) {
 
 Game.Client.prototype._initPlayer = function(options) {
 	this._player = this._addShip(options);
+
 	/* adjust viewport when position changes */
 	OZ.Event.add(this._player, "ship-tick", this._playerTick.bind(this));
 }
@@ -116,4 +117,3 @@ Game.Client.prototype._playerTick = function(e) {
 		this._engine.setDirty("map");
 	}
 }
-

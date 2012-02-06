@@ -69,6 +69,7 @@ Ship.prototype.init = function(game, options) {
 		maxForce: 500, /* pixels per weight per second^2 in vacuum */
 		maxTorque: 150 * Math.PI/180, /* degrees per second */
 		mass: null,
+		name: "Pilot #" + Math.round(Math.random()*100+1),
 		position: [this._size[0]/2, this._size[1]/2],
 		id: Math.random().toString().replace(/\D/g, "")
 	};
@@ -94,7 +95,7 @@ Ship.prototype.init = function(game, options) {
 		engine: 0, /* -1 = full back, 1 = full forward */
 		torque: {
 			mode: 0, /* 0 = nothing, 1 = target angle, 2 = forever */
-			target: 0 /* angle or +- Infinity */
+			target: 0 /* angle or +- 1 for mode = 2 */
 		},
 		fire: false
 	}
@@ -107,17 +108,8 @@ Ship.prototype.init = function(game, options) {
 	}
 	this._hp = Math.round(this._phys.mass * 1000);
 	
-	this._pilot = null;
 	this._mini = new Ship.Mini(game, def.color);
 	game.getEngine().addActor(this, "ships");
-}
-
-Ship.prototype.setPilot = function(pilot) {
-	this._pilot = pilot;
-}
-
-Ship.prototype.getPilot = function() {
-	return this._pilot;
 }
 
 Ship.prototype.getWeapon = function() {
@@ -136,9 +128,20 @@ Ship.prototype.getId = function() {
 	return this._options.id;
 }
 
+Ship.prototype.getName = function() {
+	return this._options.name;
+}
+
+Ship.prototype.getColor = function() {
+	return this._options.color;
+}
+
+Ship.prototype.getType = function() {
+	return this._options.type;
+}
+
 Ship.prototype.tick = function(dt) {
 	var changed = HAF.AnimatedSprite.prototype.tick.call(this, dt);
-	if (this._pilot) { this._pilot.act(); }
 
 	dt /= 1000;
 
@@ -207,9 +210,9 @@ Ship.prototype.damage = function(weapon) {
 	if (this._hp <= 0) {
 		this.die();
 		var labelPos = this._sprite.position.clone();
-		var enemyPilot = weapon.getShip().getPilot();
-		enemyPilot.addKill();
-		this.showLabel(this._pilot.getName() + " killed by " + enemyPilot.getName(), {size:30});
+		var enemy = weapon.getShip();
+		enemy.addKill();
+		this.showLabel(this.getName() + " killed by " + enemy.getName(), {size:30});
 	}
 }
 
@@ -224,6 +227,10 @@ Ship.prototype.die = function() {
 
 Ship.prototype.showLabel = function(text, options) {
 	new Label(this._game, text, this._sprite.position.clone(), options);
+}
+
+Ship.prototype.addKill = function() {
+	this.showLabel("+1 kill", {color:"green", size:30});
 }
 
 Ship.prototype._tickWeapons = function() {

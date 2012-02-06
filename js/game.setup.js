@@ -19,7 +19,7 @@ Game.Setup.prototype._build = function() {
 	container.appendChild(OZ.DOM.elm("hr"));
 	
 	var label = OZ.DOM.elm("label", {innerHTML:"Name: "});
-	this._dom.name = OZ.DOM.elm("input", {type:"text", value:"Human pilot #" + Math.round(Math.random()*100)});
+	this._dom.name = OZ.DOM.elm("input", {type:"text", value:"Human pilot #" + Math.round(Math.random()*100+1)});
 	label.appendChild(this._dom.name);
 	container.appendChild(label);
 	

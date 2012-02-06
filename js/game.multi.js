@@ -4,16 +4,34 @@ Game.Multi.prototype.init = function(name) {
 	Game.Client.prototype.init.call(this, name);
 
 	this._socket = null;
+	this._control = {
+		torque: {}
+	}
 }
 
 Game.Multi.prototype.start = function() {
 	Game.Client.prototype.start.call(this);
-	this._socket = new (window.WebSocket || window.MozWebSocket)("ws://obelix:8888/space");
+	this._socket = new (window.WebSocket || window.MozWebSocket)("ws://localhost:8888/space");
 	OZ.Event.add(this._socket, "open", this._open.bind(this));
 	OZ.Event.add(this._socket, "message", this._message.bind(this));
 }
 
 Game.Multi.prototype._open = function(e) {
+	/* bind keyboard to a dummy control object */
+	var kb = new Game.Keyboard(this._control);
+	OZ.Event.add(kb, "keyboard-change", this._keyboardChange.bind(this));
+	
+	/* send CREATE of player's ship */
+	var player = this._player;
+	var data = {};
+	data[player.getId()] = {
+		options: {
+			color: player.getColor(),
+			type: player.getType(),
+			name: player.getName()
+		},
+		phys: player.getPhys()
+	}
 }
 
 Game.Multi.prototype._message = function(e) {
@@ -24,7 +42,6 @@ Game.Multi.prototype._message = function(e) {
 			for (var id in data.data) {
 				if (!(id in this._ships)) { console.warn("Ship " + id + " not yet created"); }
 				var shipData = data.data[id];
-				console.log("change for " + id);
 				this._merge(id, shipData);
 			}
 		break;
@@ -32,9 +49,9 @@ Game.Multi.prototype._message = function(e) {
 		case Game.MSG_CREATE:
 			for (var id in data.data) {
 				if (id in this._ships) { continue; } /* skipping existing ship */
-				this._addShip({id:id});
-				console.log("created id " + id);
 				var shipData = data.data[id];
+				shipData.options.id = id;
+				this._addShip(shipData.options);
 				this._merge(id, shipData);
 			}
 		break;
@@ -43,6 +60,20 @@ Game.Multi.prototype._message = function(e) {
 			alert("Unknown message type " + data.type);
 		break;
 	}
+}
+
+Game.Multi.prototype._send = function(type, data) {
+	var obj = {
+		type: type,
+		data: data
+	}
+	this._socket.send(JSON.stringify(obj));
+}
+
+Game.Multi.prototype._keyboardChange = function() {
+	var data = {};
+	data[this._player.getId()] = {control:this._control};
+	this._send(Game.MSG_CHANGE, data);
 }
 
 /**

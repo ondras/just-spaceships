@@ -26,8 +26,7 @@ Game.Server.prototype.start = function() {
 
 Game.Server.prototype.onconnect = function(client, headers) {
 	this._clients.push(client);
-	/* FIXME pridat info o nazvech a typech lodi */
-	var state = this._getState();
+	var state = this._getState(true);
 	var data = {
 		type: Game.MSG_CREATE,
 		data: state
@@ -80,7 +79,7 @@ Game.Server.prototype.onidle = function() {
 	
 	if (ts - this._ts > 500) { /* FIXME constant */ /* send sync info to all clients */
 		this._ts = ts;
-		var state = this._getState();
+		var state = this._getState(false);
 		var data = {
 			type: Game.MSG_SYNC,
 			data: state
@@ -93,13 +92,21 @@ Game.Server.prototype.onidle = function() {
 	
 }
 
-Game.Server.prototype._getState = function() {
+Game.Server.prototype._getState = function(includeCreateInfo) {
 	var obj = {};
 	for (var id in this._ships) {
 		var ship = this._ships[id];
 		obj[id] = {
 			phys: ship.getPhys(),
 			control: ship.getControl(),
+		}
+		
+		if (includeCreateInfo) {
+			obj[id].options = {
+				color: ship.getColor(),
+				type: ship.getType(),
+				name: ship.getName()
+			}
 		}
 	}
 	return obj;

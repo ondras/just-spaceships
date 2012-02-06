@@ -13,11 +13,11 @@ Game.Keyboard.prototype._keydown = function(e) {
 		break;
 		case 37:
 			this._control.torque.mode = 2;
-			this._control.torque.target = -Infinity;
+			this._control.torque.target = -1;
 		break;
 		case 39:
 			this._control.torque.mode = 2;
-			this._control.torque.target = +Infinity;
+			this._control.torque.target = +1;
 		break;
 		
 		case 38:
@@ -28,7 +28,7 @@ Game.Keyboard.prototype._keydown = function(e) {
 		break;
 	}
 	/* FIXME jen pri zmene? */
-	this.dispatch("Keyboard-change");
+	this.dispatch("keyboard-change");
 }
 
 Game.Keyboard.prototype._keyup = function(e) {
@@ -49,5 +49,5 @@ Game.Keyboard.prototype._keyup = function(e) {
 		
 	}
 	/* FIXME jen pri zmene? */
-	this.dispatch("Keyboard-change");
+	this.dispatch("keyboard-change");
 }
