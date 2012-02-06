@@ -5,7 +5,7 @@ body {
 
 #setup {
 	width: 600px;
-	margin: 2em auto;
+	margin: auto;
 	text-align: center;
 }
 
@@ -18,13 +18,16 @@ body {
 	background-color: #ccc;
 }
 
+#setup .button-set {
+	margin: 1em 0em;
+}
 
 #setup .button-set button:hover {
-	background-color: #669;
+	background-color: #777;
 }
 
 #setup .button-set button.active {
-	background-color: #33a;
+	background-color: #555;
 	color: white;
 	font-weight: bold;
 }

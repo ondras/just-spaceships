@@ -7,6 +7,7 @@ Game.Server.prototype.init = function(ws) {
 	Game.prototype.init.call(this);
 	
 	this._ws = ws;
+	this._ws.setDebug(false);
 	this._ts = 0; /* last idle notification */
 	this._clients = [];
 	this._clientShips = [];
@@ -37,7 +38,12 @@ Game.Server.prototype.onconnect = function(client, headers) {
 
 Game.Server.prototype.ondisconnect = function(client, code, message) {
 	var index = this._clients.indexOf(client);
-	if (index != -1) { this._clients.splice(index, 1); }
+	if (index != -1) { 
+		this._clients.splice(index, 1); 
+		var ship = this._clientShips[index];
+		this._clientShips.splice(index, 1);
+		ship.die();
+	}
 }
 
 Game.Server.prototype.onmessage = function(client, data) {
@@ -46,10 +52,15 @@ Game.Server.prototype.onmessage = function(client, data) {
 		case Game.MSG_CREATE:
 			for (var id in parsed.data) {
 				if (id in this._ships) { /* FIXME */ continue; }
-				this._addShip({id:id});
+				var ship = this._addShip({id:id});
 				var shipData = parsed.data[id];
 				this._merge(id, shipData);
-				/* FIXME zapamatovat ke klientovi */
+				
+				
+				var index = this._clients.indexOf(client); /* remember client's ship */
+				if (this._clientShips[index]) { /* FIXME already has a ship */
+				}
+				this._clientShips[index] = ship;
 			}
 		break;
 		
