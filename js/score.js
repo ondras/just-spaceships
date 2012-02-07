@@ -2,8 +2,8 @@ var Score = OZ.Class().extend(HAF.Actor);
 
 Score.prototype.init = function(game) {
 	this._game = game;
-	
-	OZ.Event.add(null, "ship-create", this._change.bind(this));
+
+	OZ.Event.add(null, "player-create", this._change.bind(this));
 	OZ.Event.add(null, "ship-death", this._change.bind(this));
 }
 
@@ -15,13 +15,13 @@ Score.prototype.draw = function(context) {
 	var size = 20;
 	context.font = size + "px monospace";
 	context.fillStyle = "white";
-	var ships = this._game.getShips();
+	var players = this._game.getPlayers();
 	var maxName = 20;
 	var y = context.canvas.height-size;
-	for (var id in ships) {
-		var ship = ships[id];
-		var name = ship.getName().substring(0, maxName);
-		var score = ship.getScore();
+	for (var id in players) {
+		var player = players[id];
+		var name = player.getName().substring(0, maxName);
+		var score = player.getScore();
 		var line = name;
 		for (var i=name.length;i<maxName+1;i++) { line = line + " "; }
 		line += score;

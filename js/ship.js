@@ -58,8 +58,9 @@ Ship.random = function() {
 	return ship;
 }
 
-Ship.prototype.init = function(game, options) {
+Ship.prototype.init = function(game, player, options) {
 	this._game = game;
+	this._player = player;
 	this._size = game.getSize();
 
 	this._options = {
@@ -69,9 +70,7 @@ Ship.prototype.init = function(game, options) {
 		maxForce: 500, /* pixels per weight per second^2 in vacuum */
 		maxTorque: 150 * Math.PI/180, /* degrees per second */
 		mass: null,
-		name: "Pilot #" + Math.round(Math.random()*100+1),
-		position: [this._size[0]/2, this._size[1]/2],
-		id: Math.random().toString().replace(/\D/g, "")
+		position: [this._size[0]/2, this._size[1]/2]
 	};
 	for (var p in options) { this._options[p] = options[p]; }
 	
@@ -88,7 +87,6 @@ Ship.prototype.init = function(game, options) {
 	
 	this._animation.fps = 10;
 	this._deathTime = 0;
-	this._score = 0;
 	this._alive = true;
 	this._weapon = new Weapon(this._game, this);	
 	this._control = {
@@ -124,10 +122,6 @@ Ship.prototype.getPhys = function() {
 	return this._phys;
 }
 
-Ship.prototype.getId = function() {
-	return this._options.id;
-}
-
 Ship.prototype.getName = function() {
 	return this._options.name;
 }
@@ -140,8 +134,8 @@ Ship.prototype.getType = function() {
 	return this._options.type;
 }
 
-Ship.prototype.getScore = function() {
-	return this._score;
+Ship.prototype.getPlayer = function() {
+	return this._player;
 }
 
 Ship.prototype.tick = function(dt) {
@@ -214,7 +208,7 @@ Ship.prototype.damage = function(weapon) {
 	if (this._hp <= 0) {
 		this.die();
 		var labelPos = this._sprite.position.clone();
-		var enemy = weapon.getShip();
+		var enemy = weapon.getShip().getPlayer();
 		enemy.addKill();
 		this.showLabel(this.getName() + " killed by " + enemy.getName(), {size:30});
 	}
@@ -231,11 +225,6 @@ Ship.prototype.die = function() {
 
 Ship.prototype.showLabel = function(text, options) {
 	new Label(this._game, text, this._sprite.position.clone(), options);
-}
-
-Ship.prototype.addKill = function() {
-	this._score++;
-	this.showLabel("+1 kill", {color:"green", size:30});
 }
 
 Ship.prototype._tickWeapons = function() {

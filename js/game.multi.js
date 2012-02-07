@@ -1,7 +1,7 @@
 Game.Multi = OZ.Class().extend(Game.Client);
 
-Game.Multi.prototype.init = function(name, url) {
-	Game.Client.prototype.init.call(this, name);
+Game.Multi.prototype.init = function(name, shipOptions, url) {
+	Game.Client.prototype.init.call(this, name, shipOptions);
 
 	this._socket = null;
 	this._url = url;

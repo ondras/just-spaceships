@@ -3,8 +3,8 @@
  */
 Game.Single = OZ.Class().extend(Game.Client);
 
-Game.Single.prototype.init = function(name, enemies) {
-	Game.Client.prototype.init.call(this, name);
+Game.Single.prototype.init = function(name, shipOptions, enemies) {
+	Game.Client.prototype.init.call(this, name, shipOptions);
 	this._initShips(enemies);
 }
 
@@ -19,21 +19,20 @@ Game.Single.prototype._shipDeath = function(e) {
 	this._addRandomShip();
 }
 
-Game.Single.prototype._addRandomShip = function() {
+Game.Single.prototype._addRandomPlayer = function() {
 	var opt = Ship.random();
 	opt.position = [
 		Math.random()*this._size[0],
 		Math.random()*this._size[1]
 	];
 	
-	var ship = this._addShip(opt);
-	var ai = new Game.AI(this, ship);
-	ai.setRandomTarget();
+	var player = this._addPlayer(Player.AI, "Pilot #" + Math.round(100*Math.random()+1), opt);
+	player.setRandomTarget();
 }
 
-Game.Single.prototype._initPlayer = function(options) {
-	Game.Client.prototype._initPlayer.call(this, options);
+Game.Single.prototype._initPlayer = function(name, shipOptions) {
+	Game.Client.prototype._initPlayer.call(this, name, shipOptions);
 	
-	/* keyboard controls this ship */
+	/* keyboard controls this ship FIXME */
 	new Game.Keyboard(this._player.getControl());
 }

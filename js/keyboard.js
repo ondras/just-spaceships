@@ -1,12 +1,18 @@
-Game.Keyboard = OZ.Class();
+var Keyboard = OZ.Class();
 
-Game.Keyboard.prototype.init = function(control) {
-	this._control = control;
+Keyboard.prototype.init = function() {
+	this._control = null;
 	OZ.Event.add(window, "keydown", this._keydown.bind(this));
 	OZ.Event.add(window, "keyup", this._keyup.bind(this));
 }
 
-Game.Keyboard.prototype._keydown = function(e) {
+Keyboard.prototype.setControl = function(control) {
+	this._control = control;
+}
+
+Keyboard.prototype._keydown = function(e) {
+	if (!this._control) { return; }
+
 	switch (e.keyCode) {
 		case 17:
 			this._control.fire = true;
@@ -31,7 +37,9 @@ Game.Keyboard.prototype._keydown = function(e) {
 	this.dispatch("keyboard-change");
 }
 
-Game.Keyboard.prototype._keyup = function(e) {
+Keyboard.prototype._keyup = function(e) {
+	if (!this._control) { return; }
+
 	switch (e.keyCode) {
 		case 17:
 			this._control.fire = false;

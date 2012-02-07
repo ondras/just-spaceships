@@ -2,15 +2,16 @@
  * Client-side (browser) game class
  */
 Game.Client = OZ.Class().extend(Game);
-Game.Client.prototype.init = function(playerShipOptions) {
+Game.Client.prototype.init = function(playerName, playerShipOptions) {
 	this._port = [0, 0];
 	this._offset = [0, 0];
 	Game.prototype.init.call(this);
 
 	document.body.appendChild(this._engine.getContainer());
 	this._player = null;
+	this._playerCtor = Player.
 	this._initDebug(true);
-	this._initPlayer(playerShipOptions);
+	this._initPlayer(Player, playerName, playerShipOptions);
 }
 
 Game.Client.prototype.start = function() {
@@ -89,15 +90,17 @@ Game.Client.prototype._initDebug = function(chart) {
 	document.body.appendChild(monitor2);
 }
 
-Game.Client.prototype._initPlayer = function(options) {
-	this._player = this._addShip(options);
+Game.Client.prototype._initPlayer = function(name, shipOptions) {
+	this._player = this._addPlayer(this._playerCtor, name, shipOptions);
 
 	/* adjust viewport when position changes */
-	OZ.Event.add(this._player, "ship-tick", this._playerTick.bind(this));
+	OZ.Event.add(null, "ship-tick", this._shipTick.bind(this));
 }
 
-Game.Client.prototype._playerTick = function(e) {
-	var position = this._player.getPhys().position;
+Game.Client.prototype._shipTick = function(e) {
+	if (e.target.getPlayer() != this._player) { return; }
+
+	var position = e.target.getPhys().position;
 	var limit = 200;
 
 	var offsetChanged = false;
