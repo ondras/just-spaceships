@@ -108,6 +108,7 @@ Ship.prototype.init = function(game, player, options) {
 	this._mini = new Ship.Mini(game, def.color);
 
 	game.getEngine().addActor(this, "ships");
+	this.dispatch("ship-create");
 }
 
 Ship.prototype.getWeapon = function() {
@@ -122,9 +123,6 @@ Ship.prototype.getPhys = function() {
 	return this._phys;
 }
 
-Ship.prototype.getName = function() {
-	return this._options.name;
-}
 
 Ship.prototype.getColor = function() {
 	return this._options.color;
@@ -148,8 +146,6 @@ Ship.prototype.tick = function(dt) {
 	changed = this._tickMovement(dt) || changed;
 
 	if (this._alive && changed) { this._mini.setPosition(this._sprite.position); } /* update mini */
-
-	this.dispatch("ship-tick");
 
 	return changed;
 }
@@ -210,7 +206,7 @@ Ship.prototype.damage = function(weapon) {
 		var labelPos = this._sprite.position.clone();
 		var enemy = weapon.getShip().getPlayer();
 		enemy.addKill();
-		this.showLabel(this.getName() + " killed by " + enemy.getName(), {size:30});
+		this.showLabel(this._player.getName() + " killed by " + enemy.getName(), {size:30});
 	}
 }
 

@@ -3,7 +3,7 @@ var Score = OZ.Class().extend(HAF.Actor);
 Score.prototype.init = function(game) {
 	this._game = game;
 
-	OZ.Event.add(null, "player-create", this._change.bind(this));
+	OZ.Event.add(null, "ship-create", this._change.bind(this));
 	OZ.Event.add(null, "ship-death", this._change.bind(this));
 }
 

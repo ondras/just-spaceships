@@ -8,6 +8,7 @@ Game.Multi.prototype.init = function(name, shipOptions, url) {
 	this._control = {
 		torque: {}
 	}
+	OZ.Event.add(this._keyboard, "keyboard-change", this._keyboardChange.bind(this));
 }
 
 Game.Multi.prototype.start = function() {
@@ -23,10 +24,6 @@ Game.Multi.prototype._close = function(e) {
 }
 
 Game.Multi.prototype._open = function(e) {
-	/* bind keyboard to a dummy control object */
-	var kb = new Game.Keyboard(this._control);
-	OZ.Event.add(kb, "keyboard-change", this._keyboardChange.bind(this));
-	
 	/* send CREATE of player's ship */
 	var player = this._player;
 	var data = {};
@@ -78,7 +75,7 @@ Game.Multi.prototype._send = function(type, data) {
 	this._socket.send(JSON.stringify(obj));
 }
 
-Game.Multi.prototype._keyboardChange = function() {
+Game.Multi.prototype._keyboardChange = function(e) {
 	var data = {};
 	data[this._player.getId()] = {control:this._control};
 	this._send(Game.MSG_CHANGE, data);
@@ -96,5 +93,17 @@ Game.Multi.prototype._merge = function(id, data) {
 	if (data.phys) {
 		var phys = ship.getPhys();
 		for (var p in data.phys) { phys[p] = data.phys[p]; }
+	}
+}
+
+Game.Multi.prototype._shipCreate = function(e) {
+	if (e.target.getPlayer() == this._player) {
+		this._keyboard.setControl(this._control);
+	}
+}
+
+Game.Multi.prototype._shipDeath = function(e) {
+	if (e.target.getPlayer() == this._player) {
+		this._keyboard.setControl(null);
 	}
 }

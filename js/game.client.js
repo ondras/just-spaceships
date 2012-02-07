@@ -9,6 +9,9 @@ Game.Client.prototype.init = function(playerName, playerShipOptions) {
 
 	Game.prototype.init.call(this);
 
+	OZ.Event.add(null, "ship-create", this._shipCreate.bind(this));
+	OZ.Event.add(null, "ship-death", this._shipDeath.bind(this));
+
 	this._keyboard = new Keyboard();
 	this._initDebug(true);
 	this._initPlayer(playerName, playerShipOptions);
@@ -47,6 +50,14 @@ Game.Client.prototype.inPort = function(coords, distance) {
 	}
 	
 	return true;
+}
+
+Game.Client.prototype.setOffset = function(offset) {
+	this._offset[0] = offset[0].mod(this._size[0]);
+	this._offset[1] = offset[1].mod(this._size[1]);
+	this._engine.setDirty("bg");
+	this._engine.setDirty("ships");
+	this._engine.setDirty("map");
 }
 
 Game.Client.prototype._initEngine = function() {
@@ -93,37 +104,9 @@ Game.Client.prototype._initDebug = function(chart) {
 }
 
 Game.Client.prototype._initPlayer = function(name, shipOptions) {
-	this._player = this._addPlayer(Player.Human, name, shipOptions);
-
-	/* adjust viewport when position changes */
-	OZ.Event.add(null, "ship-tick", this._shipTick.bind(this));
+	this._player = this._addPlayer(Player.Human, name).setShipOptions(shipOptions);
+	this._player.createShip();
 }
 
-Game.Client.prototype._shipTick = function(e) {
-	if (e.target.getPlayer() != this._player) { return; }
-
-	var position = e.target.getPhys().position;
-	var limit = 200;
-
-	var offsetChanged = false;
-
-	for (var i=0;i<2;i++) {
-		var portPosition = Math.round(position[i] - this._offset[i]).mod(this._size[i]);
-
-		if (portPosition < limit) {
-			offsetChanged = true;
-			this._offset[i] -= limit - portPosition;
-		} else if (portPosition > this._port[i]-limit) {
-			offsetChanged = true;
-			this._offset[i] += portPosition - (this._port[i]-limit);
-		}
-	}
-	
-	if (offsetChanged) { 
-		this._offset[0] = this._offset[0].mod(this._size[0]);
-		this._offset[1] = this._offset[1].mod(this._size[1]);
-		this._engine.setDirty("bg");
-		this._engine.setDirty("ships");
-		this._engine.setDirty("map");
-	}
-}
+Game.Client.prototype._shipCreate = function(e) {}
+Game.Client.prototype._shipDeath = function(e) {}

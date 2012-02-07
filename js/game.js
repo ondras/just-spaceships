@@ -32,7 +32,6 @@ Game.MSG_CHANGE	= 2; /* ship params changed */
 Game.prototype.init = function(name) {
 	this._size = [3000, 3000];
 	this._players = {};
-	OZ.Event.add(null, "ship-death", this._shipDeath.bind(this));
 	
 	this._initEngine();
 }
@@ -66,14 +65,8 @@ Game.prototype._initEngine = function() {
 	this._engine.addLayer("score");
 }
 
-/* FIXME */
-Game.prototype._shipDeath = function(e) {
-	delete this._ships[e.target.getId()];
-}
-
-Game.prototype._addPlayer = function(ctor, name, shipOptions) {
-	var player = new ctor(this, name, shipOptions);
+Game.prototype._addPlayer = function(ctor, name, id) {
+	var player = new ctor(this, name, id);
 	this._players[player.getId()] = player;
-	this.dispatch("player-create");
 	return player;
 }

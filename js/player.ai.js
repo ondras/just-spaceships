@@ -7,8 +7,6 @@ Player.AI.prototype.init = function(game, name, id) {
 	this._control = null;
 	this._oldTick = null;
 	
-	OZ.Event.add(null, "ship-death", this._shipDeath.bind(this));
-	
 	this._target = null;
 	this._targetPhys = null;
 }

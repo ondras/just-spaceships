@@ -44,10 +44,10 @@ Weapon.Projectile.prototype.tick = function(dt) {
 		changed = true;
 	} else { /* check targets */
 		var thisShip = this._weapon.getShip();
-		var ships = this._game.getShips();
-		for (var id in ships) {
-			var ship = ships[id];
-			if (ship == thisShip) { continue; }
+		var players = this._game.getPlayers();
+		for (var id in players) {
+			var ship = players[id].getShip();
+			if (!ship || ship == thisShip) { continue; }
 			if (ship.collidesWith(this._phys.position)) {
 				ship.damage(this._weapon);
 				this._game.getEngine().removeActor(this, "fx");
