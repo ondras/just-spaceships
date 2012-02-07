@@ -50,15 +50,18 @@ Game.Client.prototype.inPort = function(coords, distance) {
 
 Game.Client.prototype._initEngine = function() {
 	Game.prototype._initEngine.call(this);
+	this._map = new Map(this, [100, 100]);
 
 	this._resize();
 
 	this._offset[0] = Math.round((this._size[0]-this._port[0])/2);
 	this._offset[1] = Math.round((this._size[1]-this._port[1])/2);
 
-	this._map = new Map(this, [100, 100]);
-	this._engine.addActor(this._map, "map");
+	/* FIXME melo by to byt tady? nemely by to delat ty tridy samy? */
 	this._engine.addActor(new Background(this), "bg");
+	this._engine.addActor(this._map, "map");
+	this._engine.addActor(new Score(this), "score");
+
 	OZ.Event.add(window, "resize", this._resize.bind(this));
 }
 
@@ -67,7 +70,9 @@ Game.Client.prototype._resize = function() {
 	for (var i=0;i<win.length;i++) {
 		this._port[i] = Math.max(500, Math.min(win[i], this._size[i]));
 	}
+
 	this._engine.setSize(this._port);
+	this._engine.setSize(this._map.getSize(), "map");
 }
 
 Game.Client.prototype._initDebug = function(chart) {

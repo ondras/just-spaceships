@@ -27,7 +27,7 @@ Ship.Mini.prototype.draw = function(context) {
 	
 	for (var i=0;i<2;i++) {
 		scale[i] = map[i]/this._size[i];
-		pos[i] = Math.round(this._position[i]*scale[i]) + port[i] - map[i];
+		pos[i] = Math.round(this._position[i]*scale[i]);
 	}
 	
 	context.fillStyle = this._color;

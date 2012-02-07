@@ -88,9 +88,9 @@ Ship.prototype.init = function(game, options) {
 	
 	this._animation.fps = 10;
 	this._deathTime = 0;
-	
-	this._weapon = new Weapon(this._game, this);	
+	this._score = 0;
 	this._alive = true;
+	this._weapon = new Weapon(this._game, this);	
 	this._control = {
 		engine: 0, /* -1 = full back, 1 = full forward */
 		torque: {
@@ -107,8 +107,8 @@ Ship.prototype.init = function(game, options) {
 		velocity: [0, 0] /* pixels per second */
 	}
 	this._hp = Math.round(this._phys.mass * 1000);
-	
 	this._mini = new Ship.Mini(game, def.color);
+
 	game.getEngine().addActor(this, "ships");
 }
 
@@ -138,6 +138,10 @@ Ship.prototype.getColor = function() {
 
 Ship.prototype.getType = function() {
 	return this._options.type;
+}
+
+Ship.prototype.getScore = function() {
+	return this._score;
 }
 
 Ship.prototype.tick = function(dt) {
@@ -230,6 +234,7 @@ Ship.prototype.showLabel = function(text, options) {
 }
 
 Ship.prototype.addKill = function() {
+	this._score++;
 	this.showLabel("+1 kill", {color:"green", size:30});
 }
 

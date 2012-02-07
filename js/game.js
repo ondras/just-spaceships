@@ -58,11 +58,12 @@ Game.prototype.inPort = function() {
 }
 
 Game.prototype._initEngine = function() {
-	this._engine = new HAF.Engine();
-	this._engine.addCanvas("bg");
-	this._engine.addCanvas("ships");
-	this._engine.addCanvas("map").style.opacity = 0.75;
-	this._engine.addCanvas("fx");
+	this._engine = new HAF.Engine(this._size);
+	this._engine.addLayer("bg");
+	this._engine.addLayer("ships");
+	this._engine.addLayer("fx");
+	this._engine.addLayer("map");
+	this._engine.addLayer("score");
 }
 
 Game.prototype._shipDeath = function(e) {
@@ -72,5 +73,6 @@ Game.prototype._shipDeath = function(e) {
 Game.prototype._addShip = function(options) {
 	var ship = new Ship(this, options);
 	this._ships[ship.getId()] = ship;
+	this.dispatch("ship-create");
 	return ship;
 }

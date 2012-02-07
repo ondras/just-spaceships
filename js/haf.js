@@ -23,7 +23,7 @@ HAF.Engine.prototype.init = function(size,  options) {
 
 	this._running = false;
 	this._container = OZ.DOM.elm("div", {id:this._options.id, position:"relative"});
-	this._canvases = {};
+	this._layers = {};
 	this.draw = this.draw.bind(this);
 	this.tick = this.tick.bind(this);
 	
@@ -46,17 +46,28 @@ HAF.Engine.prototype.init = function(size,  options) {
 	}
 }
 
-HAF.Engine.prototype.setSize = function(size) {
-	this._size = size;
-	
-	this._container.style.width = size[0]+"px";
-	this._container.style.height = size[1]+"px";
-	
-	for (var id in this._canvases) {
-		var canvas = this._canvases[id];
-		canvas.canvas.width = this._size[0];
-		canvas.canvas.height = this._size[1];
-		canvas.dirty = true;
+/**
+ * @param {int[]} size
+ * @param {id || null} layer layer to resize; when null, whole container is resized
+ */
+HAF.Engine.prototype.setSize = function(size, layerId) {
+	if (layerId) {
+		var layer = this._layers[layerId];
+		layer.canvas.width = size[0];
+		layer.canvas.height = size[1];
+		layer.dirty = true;
+	} else {
+		this._size = size;
+		
+		this._container.style.width = size[0]+"px";
+		this._container.style.height = size[1]+"px";
+		
+		for (var id in this._layers) {
+			var layer = this._layers[id];
+			layer.canvas.width = this._size[0];
+			layer.canvas.height = this._size[1];
+			layer.dirty = true;
+		}
 	}
 }
 
@@ -68,44 +79,44 @@ HAF.Engine.prototype.getContainer = function() {
 	return this._container;
 }
 
-HAF.Engine.prototype.addCanvas = function(id) {
-	var canvas = OZ.DOM.elm("canvas", {position:"absolute"});
+HAF.Engine.prototype.addLayer = function(id) {
+	var canvas = OZ.DOM.elm("canvas", {position:"absolute", id:this._options.id+"-"+id});
 	canvas.width = this._size[0];
 	canvas.height = this._size[1];
-	var obj = {
+	var layer = {
 		canvas: canvas,
 		ctx: canvas.getContext("2d"),
 		id: id,
 		dirty: false,
 		actors: []
 	}
-	this._canvases[id] = obj;
+	this._layers[id] = layer;
 	this._container.appendChild(canvas);
 	return canvas;
 }
 
-HAF.Engine.prototype.addActor = function(actor, canvasId) {
-	var obj = this._canvases[canvasId];
-	obj.actors.unshift(actor); 
-	obj.dirty = true;
+HAF.Engine.prototype.addActor = function(actor, layerId) {
+	var layer = this._layers[layerId];
+	layer.actors.unshift(actor); 
+	layer.dirty = true;
 	actor.tick(0);
 }
 
-HAF.Engine.prototype.removeActor = function(actor, canvasId) {
-	var obj = this._canvases[canvasId];
-	var index = obj.actors.indexOf(actor);
-	if (index != -1) { obj.actors.splice(index, 1); }
-	obj.dirty = true;
+HAF.Engine.prototype.removeActor = function(actor, layerId) {
+	var layer = this._layers[layerId];
+	var index = layer.actors.indexOf(actor);
+	if (index != -1) { layer.actors.splice(index, 1); }
+	layer.dirty = true;
 }
 
-HAF.Engine.prototype.removeActors = function(canvasId) {
-	var obj = this._canvases[canvasId];
-	obj.actors = [];
-	obj.dirty = true;
+HAF.Engine.prototype.removeActors = function(layerId) {
+	var layer = this._layers[layerId];
+	layer.actors = [];
+	layer.dirty = true;
 }
 
-HAF.Engine.prototype.setDirty = function(canvasId) {
-	this._canvases[canvasId].dirty = true;
+HAF.Engine.prototype.setDirty = function(layerId) {
+	this._layers[layerId].dirty = true;
 }
 
 HAF.Engine.prototype.start = function() {
@@ -137,10 +148,10 @@ HAF.Engine.prototype.tick = function() {
 	var allActors = 0;
 	var changedActors = 0;
 	
-	for (var id in this._canvases) { /* for all canvases */
-		var obj = this._canvases[id];
-		var dirty = obj.dirty;
-		var actors = obj.actors;
+	for (var id in this._layers) { /* for all layers */
+		var layer = this._layers[id];
+		var dirty = layer.dirty;
+		var actors = layer.actors;
 		var i = actors.length;
 		allActors += i;
 		while (i--) { /* tick all actors, remember if any actor changed */
@@ -148,7 +159,7 @@ HAF.Engine.prototype.tick = function() {
 			if (changed) { changedActors++; }
 			dirty = changed || dirty;
 		}
-		obj.dirty = dirty;
+		layer.dirty = dirty;
 	}
 	
 	var ts2 = Date.now();
@@ -166,16 +177,16 @@ HAF.Engine.prototype.draw = function() {
 	var dt = ts1 - this._ts.draw;
 	this._ts.draw = ts1;
 	
-	for (var id in this._canvases) { /* for all canvases */
-		var obj = this._canvases[id];
-		if (!obj.dirty) { continue; }
+	for (var id in this._layers) { /* for all layers */
+		var layer = this._layers[id];
+		if (!layer.dirty) { continue; }
 
 		/* at least one actor changed; redraw canvas */
-		obj.dirty = false;
-		var actors = obj.actors;
+		layer.dirty = false;
+		var actors = layer.actors;
 		var i = actors.length; 
-		obj.ctx.clearRect(0, 0, this._size[0], this._size[1]); /* clear canvas */
-		while (i--) { actors[i].draw(obj.ctx); }
+		layer.ctx.clearRect(0, 0, layer.canvas.width, layer.canvas.height); /* clear canvas */
+		while (i--) { actors[i].draw(layer.ctx); }
 	}
 	
 	var ts2 = Date.now();

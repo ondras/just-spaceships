@@ -6,6 +6,17 @@ body {
 	overflow: hidden;
 }
 
+#haf-map {
+	opacity: 0.75;
+	position: absolute;
+	right: 0px;
+	bottom: 0px;
+	border-color: white;
+	border-style: solid;
+	border-width: 2px 0px 0px 2px;
+	border-radius: 4px 0px 0px 0px;
+}
+
 #setup {
 	width: 600px;
 	margin: 2em auto;
