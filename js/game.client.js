@@ -5,13 +5,13 @@ Game.Client = OZ.Class().extend(Game);
 Game.Client.prototype.init = function(playerName, playerShipOptions) {
 	this._port = [0, 0];
 	this._offset = [0, 0];
+	this._player = null;
+
 	Game.prototype.init.call(this);
 
-	document.body.appendChild(this._engine.getContainer());
-	this._player = null;
-	this._playerCtor = Player.
+	this._keyboard = new Keyboard();
 	this._initDebug(true);
-	this._initPlayer(Player, playerName, playerShipOptions);
+	this._initPlayer(playerName, playerShipOptions);
 }
 
 Game.Client.prototype.start = function() {
@@ -51,6 +51,8 @@ Game.Client.prototype.inPort = function(coords, distance) {
 
 Game.Client.prototype._initEngine = function() {
 	Game.prototype._initEngine.call(this);
+	document.body.appendChild(this._engine.getContainer());
+
 	this._map = new Map(this, [100, 100]);
 
 	this._resize();
@@ -91,7 +93,7 @@ Game.Client.prototype._initDebug = function(chart) {
 }
 
 Game.Client.prototype._initPlayer = function(name, shipOptions) {
-	this._player = this._addPlayer(this._playerCtor, name, shipOptions);
+	this._player = this._addPlayer(Player.Human, name, shipOptions);
 
 	/* adjust viewport when position changes */
 	OZ.Event.add(null, "ship-tick", this._shipTick.bind(this));

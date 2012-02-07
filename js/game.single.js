@@ -33,6 +33,6 @@ Game.Single.prototype._addRandomPlayer = function() {
 Game.Single.prototype._initPlayer = function(name, shipOptions) {
 	Game.Client.prototype._initPlayer.call(this, name, shipOptions);
 	
-	/* keyboard controls this ship FIXME */
+	/* keyboard controls this ship FIXME only when player ship exists */
 	new Game.Keyboard(this._player.getControl());
 }
