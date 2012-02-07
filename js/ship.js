@@ -67,8 +67,8 @@ Ship.prototype.init = function(game, player, options) {
 		color: "yellow",
 		type: 1,
 		size: [64, 64],
-		maxForce: 500, /* pixels per weight per second^2 in vacuum */
-		maxTorque: 150 * Math.PI/180, /* degrees per second */
+		maxForce: 600, /* pixels per weight per second^2 in vacuum */
+		maxTorque: 200 * Math.PI/180, /* degrees per second */
 		mass: null,
 		position: [this._size[0]/2, this._size[1]/2]
 	};
@@ -270,7 +270,7 @@ Ship.prototype._tickMovement = function(dt) {
 
 	for (var i=0;i<2;i++) { /* adjust position */
 		if (this._control.engine && this._alive) { /* engines add force => velocity */
-			var force = (this._control.engine > 0 ? 1 : 0.5) * this._options.maxForce * this._control.engine;
+			var force = (this._control.engine > 0 ? 1 : 0.75) * this._options.maxForce * this._control.engine;
 			force *= (i ? Math.sin : Math.cos)(this._phys.orientation);
 			this._phys.velocity[i] += force * dt / this._phys.mass;
 		}

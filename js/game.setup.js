@@ -163,5 +163,7 @@ Game.Setup.prototype._play = function(e) {
 	}
 	
 	game.start();
+	
+	window.g = game;
 }
 
