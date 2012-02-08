@@ -9,8 +9,9 @@ Game.Setup.prototype.init = function() {
 	} else {
 		this._clickSingle();
 	}
-	this._selectColor("yellow");
-	this._selectShip(1);
+	
+	this._selectColor(localStorage.color || Ship.random().color);
+	this._selectShip(localStorage.type === null ? 1 : localStorage.type);
 }
 
 Game.Setup.prototype._build = function() {
@@ -150,6 +151,8 @@ Game.Setup.prototype._play = function(e) {
 		type:this._ship
 	};
 	localStorage.name = name;
+	localStorage.color = ship.color;
+	localStorage.type = ship.type;
 	
 	if (OZ.DOM.hasClass(this._dom.single, "active")) {
 		var enemies = parseInt(this._dom.enemies.value) || 3;
