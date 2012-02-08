@@ -129,7 +129,7 @@ Game.Server.prototype.onmessage = function(client, data) {
 				
 				var ship = player.getShip();
 				if (!ship) {
-					console.warn("[change] player "+player.getName()+" does not have a ship");
+					this._debug("[change] player "+player.getName()+" does not have a ship");
 					continue;
 				}
 				
