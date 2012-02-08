@@ -22,6 +22,8 @@ Background.prototype.init = function(game) {
 	}
 	context.stroke();
 	*/
+
+	this._game.getEngine().addActor(this, "bg");
 	
 }
 

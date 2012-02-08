@@ -71,9 +71,7 @@ Game.Client.prototype._initEngine = function() {
 	this._offset[0] = Math.round((this._size[0]-this._port[0])/2);
 	this._offset[1] = Math.round((this._size[1]-this._port[1])/2);
 
-	/* FIXME melo by to byt tady? nemely by to delat ty tridy samy? */
-	this._engine.addActor(new Background(this), "bg");
-	this._engine.addActor(this._map, "map");
+	new Background(this);
 	new Score(this);
 
 	OZ.Event.add(window, "resize", this._resize.bind(this));
