@@ -71,9 +71,11 @@ Game.prototype._initEngine = function() {
 Game.prototype._addPlayer = function(ctor, name, id) {
 	var player = new ctor(this, name, id);
 	this._players[player.getId()] = player;
+	this.dispatch("player-create");
 	return player;
 }
 
 Game.prototype._removePlayer = function(id) {
 	delete this._players[id];
+	this.dispatch("player-death");
 }

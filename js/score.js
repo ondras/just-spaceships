@@ -5,7 +5,8 @@ Score.prototype.init = function(game) {
 	this._node = OZ.DOM.elm("div", {className:"score"});
 	this._game.getEngine().getContainer().appendChild(this._node);
 
-	OZ.Event.add(null, "ship-create", this._change.bind(this));
+	OZ.Event.add(null, "player-create", this._change.bind(this));
+	OZ.Event.add(null, "player-death", this._change.bind(this));
 	OZ.Event.add(null, "ship-death", this._change.bind(this));
 }
 

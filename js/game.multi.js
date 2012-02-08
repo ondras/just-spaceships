@@ -67,7 +67,9 @@ Game.Multi.prototype._message = function(e) {
 			for (var id in data.data) {
 				var playerData = data.data[id];
 				if (id in this._players) {
-					console.warn("[create player] "+id+" already exists");
+					if (id != this._player.getId()) {
+						console.warn("[create player] "+id+" already exists");
+					}
 					continue;
 				}
 				
@@ -87,7 +89,9 @@ Game.Multi.prototype._message = function(e) {
 				}
 				
 				if (player.getShip()) {
-					console.warn("[create ship] player "+player.getName()+" already has a ship");
+					if (player != this._player) {
+						console.warn("[create ship] player "+player.getName()+" already has a ship");
+					}
 					continue;
 				}
 				

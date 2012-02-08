@@ -202,9 +202,11 @@ Game.Server.prototype._shipDeath = function(e) {
 		type: Game.MSG_DESTROY_SHIP,
 		data: {
 			target: e.target.getPlayer().getId(),
-			enemy: e.data.enemy
+			enemy: null
 		}
 	}
+	if (e.data.enemy) { data.data.enemy = e.data.enemy.getId(); }
+
 	var str = JSON.stringify(data);
 	for (var i=0;i<this._clients.length;i++) {
 		this._ws.send(this._clients[i], str);

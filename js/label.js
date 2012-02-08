@@ -60,7 +60,7 @@ Label.prototype.draw = function(context) {
 	var offset = this._game.getOffset();
 	var tmp = [0, 0];
 	for (var i=0;i<2;i++) {
-		tmp[i] = (this._pxPosition[i] - offset[i] - canvasSize[i]/2).mod(this._size[i]);
+		tmp[i] = this._pxPosition[i] - offset[i] - canvasSize[i]/2;
 	}
 	
 	context.drawImage(this._canvas, tmp[0], tmp[1]);
