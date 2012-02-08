@@ -200,7 +200,10 @@ Game.Server.prototype._shipDeath = function(e) {
 	this._debug("Destroyed ship for player " + e.target.getPlayer().getName());
 	var data = {
 		type: Game.MSG_DESTROY_SHIP,
-		data: e.target.getPlayer().getId()
+		data: {
+			target: e.target.getPlayer().getId(),
+			enemy: e.data.enemy
+		}
 	}
 	var str = JSON.stringify(data);
 	for (var i=0;i<this._clients.length;i++) {
@@ -213,7 +216,7 @@ Game.Server.prototype._removePlayer = function(id) {
 	
 	/* destroy ship if possible */
 	var ship = player.getShip();
-	if (ship) { ship.die(); }
+	if (ship) { ship.die(null); }
 
 	this._debug("Destroying player " + player.getName());
 

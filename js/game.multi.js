@@ -98,9 +98,10 @@ Game.Multi.prototype._message = function(e) {
 		break;
 		
 		case Game.MSG_DESTROY_SHIP:
-			var player = this._players[data.data];
+			var enemy = null; 
+			var player = this._players[data.data.target];
 			if (!player) {
-				console.warn("[destroy ship] player " + data.data + " does not exist");
+				console.warn("[destroy ship] player " + data.data.target + " does not exist");
 				break;
 			}
 			var ship = player.getShip();
@@ -108,7 +109,16 @@ Game.Multi.prototype._message = function(e) {
 				console.warn("[destroy ship] player " + player.getName() + " does not have a ship");
 				break;
 			}
-			ship.die();
+			
+			if (data.data.enemy) {
+				var enemy = this._players[data.data.enemy];
+				if (!enemy) {
+					console.warn("[destroy ship] enemy " + data.data.enemy + " does not exist");
+					break;
+				}
+			}
+			
+			ship.die(enemy);
 		break;
 		
 		case Game.MSG_DESTROY_PLAYER:

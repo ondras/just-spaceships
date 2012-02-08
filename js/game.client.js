@@ -82,7 +82,7 @@ Game.Client.prototype._initEngine = function() {
 Game.Client.prototype._resize = function() {
 	var win = OZ.DOM.win();
 	for (var i=0;i<win.length;i++) {
-		this._port[i] = Math.max(500, Math.min(win[i], this._size[i]));
+		this._port[i] = Math.min(win[i], this._size[i]);
 	}
 
 	this._engine.setSize(this._port);

@@ -116,11 +116,11 @@ Player.Human.prototype._tick = function(dt) {
 	var size = this._game.getSize();
 	var offset = this._game.getOffset();
 	var port = this._game.getPort();
-	var limit = 200;
 	var offsetChanged = false;
 
 	for (var i=0;i<2;i++) {
 		var portPosition = Math.round(position[i] - offset[i]).mod(size[i]);
+		var limit = Math.round(port[i]/4);
 
 		if (portPosition < limit) {
 			offsetChanged = true;

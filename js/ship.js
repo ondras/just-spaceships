@@ -214,21 +214,23 @@ Ship.prototype.damage = function(weapon) {
 	new Label(this._game, "-" + amount, labelPos);
 	
 	if (this._hp <= 0) {
-		var labelPos = this._sprite.position.clone();
-		var enemy = weapon.getShip().getPlayer();
-		enemy.addKill();
-		this.showLabel(this._player.getName() + " killed by " + enemy.getName(), {size:30});
-		this.die();
+		this.die(weapon.getShip().getPlayer());
 	}
 }
 
-Ship.prototype.die = function() {
+Ship.prototype.die = function(enemy) {
+	if (enemy) { 
+		enemy.addKill(); 
+		var labelPos = this._sprite.position.clone();
+		this.showLabel(this._player.getName() + " killed by " + enemy.getName(), {size:30});
+	}
+
 	this._alive = false;
 	this._hp = 0;
 	this._deathTime = Date.now();
 	this._mini.die();
 	this._phys.decay *= 5;
-	this.dispatch("ship-death");
+	this.dispatch("ship-death", {enemy:enemy});
 	new Explosion(this._game, this._sprite.position);
 }
 
