@@ -1,6 +1,5 @@
 #!/usr/bin/env v8cgi
 
-require.paths.unshift("/home/ondras/svn/v8cgi/lib");
 var FS = require("fs");
 
 /* mininal DOM environment */
@@ -33,4 +32,3 @@ HAF.Engine.prototype.draw = function() {}
 var Server = require("websocket").Server;
 var ws = new Server("0.0.0.0", 8888);
 new Game.Server(ws).start();
-

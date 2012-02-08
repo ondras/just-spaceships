@@ -8,17 +8,32 @@ Player.Human.prototype.init = function(game, name, id) {
 	OZ.Event.add(window, "keyup", this._keyup.bind(this));
 	
 	this._idleNode = OZ.DOM.elm("div", {innerHTML:"Press Enter to start", className:"idle", position:"absolute"});
-	this._idle();
+	this._idle = false;
 	
 	this._pan = {
 		timeout: null,
 		pressed: {
 		}
 	}
+
+	this.setIdle(true);
+}
+
+Player.Human.prototype.setIdle = function(idle) {
+	this._idle = idle;
+	if (idle) {
+		var parent = this._game.getEngine().getContainer();
+		parent.appendChild(this._idleNode);
+		
+		this._idleNode.style.left = Math.round((parent.offsetWidth-this._idleNode.offsetWidth)/2) + "px";
+		this._idleNode.style.top = Math.round((parent.offsetHeight-this._idleNode.offsetHeight)/2) + "px";
+	} else {
+		this._idleNode.parentNode.removeChild(this._idleNode);
+	}
 }
 
 Player.Human.prototype.createShip = function() {
-	this._idleNode.parentNode.removeChild(this._idleNode);
+	this.setIdle(false);
 	var ship = Player.prototype.createShip.call(this);
 	this._oldTick = ship.tick;
 	ship.tick = this._tick.bind(this);
@@ -37,7 +52,7 @@ Player.Human.prototype._keydown = function(e) {
 	
 	switch (e.keyCode) {
 		case 13:
-			this.createShip();
+			if (this._idle) { this.createShip(); }
 		break;
 		
 		case 37:
@@ -94,14 +109,6 @@ Player.Human.prototype._panStep = function() {
 	
 }
 
-Player.Human.prototype._idle = function() {
-	var parent = this._game.getEngine().getContainer();
-	parent.appendChild(this._idleNode);
-	
-	this._idleNode.style.left = Math.round((parent.offsetWidth-this._idleNode.offsetWidth)/2) + "px";
-	this._idleNode.style.top = Math.round((parent.offsetHeight-this._idleNode.offsetHeight)/2) + "px";
-}
-
 Player.Human.prototype._tick = function(dt) {
 	var tickResult = this._oldTick.call(this._ship, dt);
 
@@ -127,12 +134,14 @@ Player.Human.prototype._tick = function(dt) {
 	if (offsetChanged) { 
 		this._game.setOffset(offset);
 	}
+	
+	return tickResult;
 }
 
 Player.Human.prototype._shipDeath = function(e) {
 	if (e.target == this._ship) { /* our ship died */
 		this._ship.tick = this._oldTick;
 		this._ship = null; 
-		this._idle();
+		this.setIdle(true);
 	} 
 }

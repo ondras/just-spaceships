@@ -33,7 +33,7 @@ Player.AI.prototype._tick = function(dt) {
 		this._control.engine = (dist < range/2 ? -.7 : .7);
 		
 		var diff = this._phys.orientation.angleDiff(angle);
-		this._control.fire = (this._target.getHP() > 0) && (dx*dx+dy*dy < range*range && Math.abs(diff) < Math.PI/8);
+		this._control.fire = (this._target.getHP()) && (dx*dx+dy*dy < range*range && Math.abs(diff) < Math.PI/8);
 	}
 	
 	return this._oldTick.call(this._ship, dt);

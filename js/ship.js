@@ -224,6 +224,7 @@ Ship.prototype.damage = function(weapon) {
 
 Ship.prototype.die = function() {
 	this._alive = false;
+	this._hp = 0;
 	this._deathTime = Date.now();
 	this._mini.die();
 	this._phys.decay *= 5;

@@ -2,12 +2,14 @@ Game.Multi = OZ.Class().extend(Game.Client);
 
 Game.Multi.prototype.init = function(name, shipOptions, url) {
 	Game.Client.prototype.init.call(this, name, shipOptions);
-
+	
+	this._player.setIdle(false);
 	this._socket = null;
 	this._url = url;
 	this._control = {
 		torque: {}
 	}
+	
 	OZ.Event.add(this._keyboard, "keyboard-change", this._keyboardChange.bind(this));
 }
 
@@ -24,19 +26,17 @@ Game.Multi.prototype._close = function(e) {
 }
 
 Game.Multi.prototype._open = function(e) {
-	/* send CREATE of player's ship */
+	this._player.setIdle(true); /* allow creation of player's ship */
+	
+	/* send CREATE_PLAYER */
 	var player = this._player;
 	var data = {};
 	data[player.getId()] = {
-		options: {
-			color: player.getColor(),
-			type: player.getType(),
-			name: player.getName()
-		},
-		phys: player.getPhys()
+		name: player.getName(),
+		shipOptions: player.getShipOptions()
 	}
 	
-	this._send(Game.MSG_CREATE, data);
+	this._send(Game.MSG_CREATE_PLAYER, data);
 }
 
 Game.Multi.prototype._message = function(e) {
@@ -45,20 +45,78 @@ Game.Multi.prototype._message = function(e) {
 		case Game.MSG_SYNC:
 		case Game.MSG_CHANGE:
 			for (var id in data.data) {
-				if (!(id in this._ships)) { console.warn("Ship " + id + " not yet created"); }
-				var shipData = data.data[id];
-				this._merge(id, shipData);
+				var playerData = data.data[id];
+				var player = this._players[id];
+				if (!player) {
+					console.warn("[change/sync] player "+id+" not available");
+					continue;
+				}
+				
+				var ship = player.getShip();
+				if (!ship) {
+					console.warn("[change/sync] player "+player.getName()+" does not have a ship");
+					continue;
+				}
+				
+				this._mergeShip(ship, playerData);
 			}
 		break;
 		
-		case Game.MSG_CREATE:
+		case Game.MSG_CREATE_PLAYER:
 			for (var id in data.data) {
-				if (id in this._ships) { continue; } /* skipping existing ship */
-				var shipData = data.data[id];
-				shipData.options.id = id;
-				this._addShip(shipData.options);
-				this._merge(id, shipData);
+				var playerData = data.data[id];
+				if (id in this._players) {
+					console.warn("[create player] "+id+" already exists");
+					continue;
+				}
+				
+				var player = this._addPlayer(Player, playerData.name, id); 
+				player.setScore(playerData.score); 
+				player.setShipOptions(playerData.shipOptions); 
 			}
+		break;
+		
+		case Game.MSG_CREATE_SHIP:
+			for (var id in data.data) {
+				var playerData = data.data[id];
+				var player = this._players[id];
+				if (!player) {
+					console.warn("[create ship] player "+id+" not available");
+					continue;
+				}
+				
+				if (player.getShip()) {
+					console.warn("[create ship] player "+player.getName()+" already has a ship");
+					continue;
+				}
+				
+				var ship = player.createShip();
+				this._mergeShip(ship, playerData);
+			}
+				
+		break;
+		
+		case Game.MSG_DESTROY_SHIP:
+			var player = this._players[data.data];
+			if (!player) {
+				console.warn("[destroy ship] player " + data.data + " does not exist");
+				break;
+			}
+			var ship = player.getShip();
+			if (!ship) {
+				console.warn("[destroy ship] player " + player.getName() + " does not have a ship");
+				break;
+			}
+			ship.die();
+		break;
+		
+		case Game.MSG_DESTROY_PLAYER:
+			var player = this._players[data.data];
+			if (!player) {
+				console.warn("[destroy player] player " + data.data + " does not exist");
+				break;
+			}
+			this._removePlayer(player.getId());
 		break;
 		
 		default:
@@ -84,8 +142,7 @@ Game.Multi.prototype._keyboardChange = function(e) {
 /**
  * Merge ship data with existing ship
  */
-Game.Multi.prototype._merge = function(id, data) {
-	var ship = this._ships[id];
+Game.Multi.prototype._mergeShip = function(ship, data) {
 	if (data.control) {
 		var control = ship.getControl();
 		for (var p in data.control) { control[p] = data.control[p]; }
@@ -97,8 +154,19 @@ Game.Multi.prototype._merge = function(id, data) {
 }
 
 Game.Multi.prototype._shipCreate = function(e) {
-	if (e.target.getPlayer() == this._player) {
+	e.target.setHP(1/0); /* ships are indestructible, until the server says otherwise */
+	
+	if (e.target.getPlayer() == this._player) { /* player's ship */
 		this._keyboard.setControl(this._control);
+		
+		/* send CREATE_SHIP of player's ship */
+		var player = this._player;
+		var data = {};
+		data[player.getId()] = {
+			phys: e.target.getPhys()
+		}
+		
+		this._send(Game.MSG_CREATE_SHIP, data);
 	}
 }
 

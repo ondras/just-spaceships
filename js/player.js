@@ -16,10 +16,19 @@ Player.prototype.setShipOptions = function(options) {
 	return this;
 }
 
+Player.prototype.getShipOptions = function() {
+	return this._shipOptions;
+}
+
 Player.prototype.createShip = function() {
 	if (this._ship) { return; }
 	this._ship = new Ship(this._game, this, this._shipOptions);
 	return this._ship;
+}
+
+Player.prototype.setScore = function(score) {
+	this._score = score; 
+	return this;
 }
 
 Player.prototype.getScore = function() {
