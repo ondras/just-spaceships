@@ -53,10 +53,6 @@ body {
 	margin: 1em 0em;
 }
 
-#setup .button-set button:hover {
-	box-shadow: inset 0px 0px 3px 3px #555;
-}
-
 #setup .button-set button.active {
 	background-color: #555;
 	color: white;
@@ -79,7 +75,16 @@ body {
 	cursor: pointer;
 }
 
+#setup button:hover {
+	box-shadow: inset 0px 0px 3px 3px #555;
+}
+
 #setup button img {
 	display: block;
 	margin: auto;
+}
+
+#setup button.play {
+	font-weight: bold;
+	font-size: 150%;
 }

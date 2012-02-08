@@ -59,6 +59,7 @@ Game.Setup.prototype._build = function() {
 	container.appendChild(OZ.DOM.elm("hr"));
 	
 	var play = this._buildButton("Play!", this._play);
+	play.className = "play";
 	container.appendChild(play);
 
 	document.body.appendChild(container);
