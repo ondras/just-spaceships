@@ -204,8 +204,7 @@ Game.Server.prototype._shipDeath = function(e) {
 	}
 	var str = JSON.stringify(data);
 	for (var i=0;i<this._clients.length;i++) {
-		var client = this._clients[i];
-		this._ws.send(str);
+		this._ws.send(this._clients[i], str);
 	}
 }
 

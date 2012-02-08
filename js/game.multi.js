@@ -33,6 +33,7 @@ Game.Multi.prototype._open = function(e) {
 	var data = {};
 	data[player.getId()] = {
 		name: player.getName(),
+		score: player.getScore(),
 		shipOptions: player.getShipOptions()
 	}
 	
