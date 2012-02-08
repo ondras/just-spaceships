@@ -64,7 +64,7 @@ Game.Setup.prototype._build = function() {
 	
 	this._dom.singleDetails = OZ.DOM.elm("div");
 	var label = OZ.DOM.elm("label", {innerHTML:"Enemies: "});
-	this._dom.enemies = OZ.DOM.elm("input", {type:"text", value:"4", size:"2"});
+	this._dom.enemies = OZ.DOM.elm("input", {type:"text", value:"3", size:"2"});
 	label.appendChild(this._dom.enemies);
 	this._dom.singleDetails.appendChild(label);
 

@@ -5,7 +5,15 @@ Game.Single = OZ.Class().extend(Game.Client);
 
 Game.Single.prototype.init = function(name, shipOptions, enemies) {
 	Game.Client.prototype.init.call(this, name, shipOptions);
-	for (var i=0;i<enemies;i++) { this._addRandomPlayer(); }
+
+	for (var i=0;i<enemies;i++) { 
+		this._addRandomPlayer(); 
+	}
+	
+	for (var id in this._players) {
+		var player = this._players[id];
+		if (player != this._player) { player.setRandomTarget(); }
+	}
 }
 
 Game.Single.prototype._shipCreate = function(e) {
@@ -27,7 +35,6 @@ Game.Single.prototype._addRandomPlayer = function() {
 		Math.random()*this._size[1]
 	];
 	
-	var player = this._addPlayer(Player.AI, "Pilot #" + Math.round(100*Math.random()+1)).setShipOptions(opt);
+	var player = this._addPlayer(Player.AI, "AI #" + Math.round(100*Math.random()+1)).setShipOptions(opt);
 	player.createShip();
-	player.setRandomTarget();
 }

@@ -6,7 +6,13 @@ body {
 	overflow: hidden;
 }
 
-#haf-map {
+#haf .idle {
+	color: yellow;
+	opacity: 0.9;
+	font-size: 300%;
+}
+
+#haf .map {
 	opacity: 0.75;
 	position: absolute;
 	right: 0px;
@@ -15,6 +21,17 @@ body {
 	border-style: solid;
 	border-width: 2px 0px 0px 2px;
 	border-radius: 4px 0px 0px 0px;
+}
+
+#haf .score {
+	white-space: pre;
+	font-family: monospace;
+	color: #ccc;
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	font-size: 120%;
+	line-height: 150%;
 }
 
 #setup {

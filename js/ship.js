@@ -88,6 +88,7 @@ Ship.prototype.init = function(game, player, options) {
 	this._animation.fps = 10;
 	this._deathTime = 0;
 	this._alive = true;
+	this._hp = 0;
 	this._weapon = new Weapon(this._game, this);	
 	this._control = {
 		engine: 0, /* -1 = full back, 1 = full forward */
@@ -101,10 +102,11 @@ Ship.prototype.init = function(game, player, options) {
 		mass: this._options.mass,
 		orientation: 0,
 		decay: 0.5,
-		position: this._options.position,
+		position: this._options.position.clone(),
 		velocity: [0, 0] /* pixels per second */
 	}
-	this._hp = Math.round(this._phys.mass * 1000);
+
+	this.setHP(Math.round(this._phys.mass*1000));
 	this._mini = new Ship.Mini(game, def.color);
 
 	game.getEngine().addActor(this, "ships");
@@ -151,7 +153,7 @@ Ship.prototype.tick = function(dt) {
 }
 
 Ship.prototype.draw = function(context) {
-	if (!this._game.inPort(this._sprite.position, 100)) { return; } /* do not draw outside of port */
+	if (this._alive && !this._game.inPort(this._sprite.position, 100)) { return; } /* do not draw outside of port */
 		
 	var offset = this._game.getOffset();
 	var tmp = [0, 0];
@@ -169,6 +171,7 @@ Ship.prototype.draw = function(context) {
 		if (dt > limit) {
 			this._game.getEngine().removeActor(this, "ships");
 			context.globalAlpha = 0;
+			this.dispatch("ship-purge");
 		} else {
 			context.globalAlpha = (limit-dt) / limit;
 		}
@@ -193,6 +196,15 @@ Ship.prototype.collidesWith = function(position) {
 	return (dx*dx+dy*dy < r*r);
 }
 
+Ship.prototype.getHP = function() {
+	return this._hp;
+}
+
+Ship.prototype.setHP = function(hp) {
+	this._hp = hp;
+	return this;
+}
+
 Ship.prototype.damage = function(weapon) {
 	var amount = weapon.getDamage();
 	this._hp -= amount;
@@ -202,11 +214,11 @@ Ship.prototype.damage = function(weapon) {
 	new Label(this._game, "-" + amount, labelPos);
 	
 	if (this._hp <= 0) {
-		this.die();
 		var labelPos = this._sprite.position.clone();
 		var enemy = weapon.getShip().getPlayer();
 		enemy.addKill();
 		this.showLabel(this._player.getName() + " killed by " + enemy.getName(), {size:30});
+		this.die();
 	}
 }
 

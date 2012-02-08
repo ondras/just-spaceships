@@ -26,9 +26,11 @@ Array.prototype.random = function() {
  * Base abstract game class
  */
 var Game = OZ.Class();
-Game.MSG_SYNC	= 0; /* ship state sync */
-Game.MSG_CREATE	= 1; /* new ship(s) created */
-Game.MSG_CHANGE	= 2; /* ship params changed */
+Game.MSG_SYNC		= 0; /* player/ship state sync */
+Game.MSG_CREATE		= 1; /* new ship(s) created */
+Game.MSG_CHANGE		= 2; /* ship params changed */
+Game.MSG_DESTROY	= 3; /* player's ship destroyed */
+
 Game.prototype.init = function(name) {
 	this._size = [3000, 3000];
 	this._players = {};
@@ -62,7 +64,6 @@ Game.prototype._initEngine = function() {
 	this._engine.addLayer("ships");
 	this._engine.addLayer("fx");
 	this._engine.addLayer("map");
-	this._engine.addLayer("score");
 }
 
 Game.prototype._addPlayer = function(ctor, name, id) {

@@ -9,6 +9,8 @@ Player.AI.prototype.init = function(game, name, id) {
 	
 	this._target = null;
 	this._targetPhys = null;
+
+	OZ.Event.add(null, "ship-purge", this._shipPurge.bind(this));
 }
 
 Player.AI.prototype._tick = function(dt) {
@@ -28,10 +30,10 @@ Player.AI.prototype._tick = function(dt) {
 		
 		var range = this._ship.getWeapon().getRange();
 
-		this._control.engine = (dist < range/2 ? -1 : 1);
+		this._control.engine = (dist < range/2 ? -.7 : .7);
 		
 		var diff = this._phys.orientation.angleDiff(angle);
-		this._control.fire = (dx*dx+dy*dy < range*range && Math.abs(diff) < Math.PI/8);
+		this._control.fire = (this._target.getHP() > 0) && (dx*dx+dy*dy < range*range && Math.abs(diff) < Math.PI/8);
 	}
 	
 	return this._oldTick.call(this._ship, dt);
@@ -65,10 +67,15 @@ Player.AI.prototype.createShip = function() {
 
 Player.AI.prototype._shipDeath = function(e) {
 	if (e.target == this._ship) { /* our ship died */
+		this._ship.tick = this._oldTick;
 		this._ship = null;
 		this.createShip(); /* create new ship */
-	} else if (e.target == this._target) { /* target ship died */
+	}
+}
+
+Player.AI.prototype._shipPurge = function(e) {
+	if (e.target == this._target) { 
 		this._target = null;
-		this.setRandomTarget();
+		this.setRandomTarget(); 
 	}
 }

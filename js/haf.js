@@ -80,7 +80,7 @@ HAF.Engine.prototype.getContainer = function() {
 }
 
 HAF.Engine.prototype.addLayer = function(id) {
-	var canvas = OZ.DOM.elm("canvas", {position:"absolute", id:this._options.id+"-"+id});
+	var canvas = OZ.DOM.elm("canvas", {position:"absolute", className:id});
 	canvas.width = this._size[0];
 	canvas.height = this._size[1];
 	var layer = {

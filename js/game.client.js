@@ -74,7 +74,7 @@ Game.Client.prototype._initEngine = function() {
 	/* FIXME melo by to byt tady? nemely by to delat ty tridy samy? */
 	this._engine.addActor(new Background(this), "bg");
 	this._engine.addActor(this._map, "map");
-	this._engine.addActor(new Score(this), "score");
+	new Score(this);
 
 	OZ.Event.add(window, "resize", this._resize.bind(this));
 }
@@ -105,7 +105,6 @@ Game.Client.prototype._initDebug = function(chart) {
 
 Game.Client.prototype._initPlayer = function(name, shipOptions) {
 	this._player = this._addPlayer(Player.Human, name).setShipOptions(shipOptions);
-	this._player.createShip();
 }
 
 Game.Client.prototype._shipCreate = function(e) {}
