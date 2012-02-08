@@ -3,6 +3,7 @@ Player.AI = OZ.Class().extend(Player);
 Player.AI.prototype.init = function(game, name, id) {
 	Player.prototype.init.call(this, game, name, id);
 
+	this._size = game.getSize();
 	this._phys = null;
 	this._control = null;
 	this._oldTick = null;
@@ -18,9 +19,8 @@ Player.AI.prototype._tick = function(dt) {
 		var dx = this._targetPhys.position[0]-this._phys.position[0];
 		var dy = this._targetPhys.position[1]-this._phys.position[1];
 		
-		/* FIXME skutecna velikost sveta! */
-		if (Math.abs(dx) > 1500) { dx += (dx > 0 ? -1 : 1) * 3000; }
-		if (Math.abs(dy) > 1500) { dy += (dy > 0 ? -1 : 1) * 3000; }
+		if (Math.abs(dx) > this._size[0]/2) { dx += (dx > 0 ? -1 : 1) * this._size[0]; }
+		if (Math.abs(dy) > this._size[1]/2) { dy += (dy > 0 ? -1 : 1) * this._size[1]; }
 		
 		var dist = Math.sqrt(dx*dx+dy*dy);
 

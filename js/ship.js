@@ -192,7 +192,7 @@ Ship.prototype.draw = function(context) {
 Ship.prototype.collidesWith = function(position) {
 	var dx = position[0]-this._phys.position[0];
 	var dy = position[1]-this._phys.position[1];
-	var r = this._sprite.size[0]/3; /* FIXME cachovat? */
+	var r = this._sprite.size[0]/3;
 	return (dx*dx+dy*dy < r*r);
 }
 
