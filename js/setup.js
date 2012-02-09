@@ -1,5 +1,6 @@
-Game.Setup = OZ.Class();
-Game.Setup.prototype.init = function() {
+var Setup = OZ.Class();
+Setup.URL = "ws://" + location.hostname + ":8888/space";
+Setup.prototype.init = function() {
 	this._dom = {};
 	this._ship = null;
 	
@@ -14,7 +15,7 @@ Game.Setup.prototype.init = function() {
 	this._selectShip(typeof(localStorage.type) == "string" ? localStorage.type : 1);
 }
 
-Game.Setup.prototype._build = function() {
+Setup.prototype._build = function() {
 	var container = OZ.DOM.elm("div", {id:"setup"});
 	
 	var h1 = OZ.DOM.elm("h1", {innerHTML:"Just Spaceships!"});
@@ -74,7 +75,7 @@ Game.Setup.prototype._build = function() {
 	this._dom.multiDetails = OZ.DOM.elm("div");
 	var label = OZ.DOM.elm("label", {innerHTML:"Server URL: "});
 	this._dom.url = OZ.DOM.elm("input", {type:"text"});
-	this._dom.url.value = localStorage.url || "ws://" + location.hostname + ":8888/space";
+	this._dom.url.value = localStorage.url || this.constructor.URL;
 	label.appendChild(this._dom.url);
 	this._dom.multiDetails.appendChild(label);
 
@@ -84,7 +85,7 @@ Game.Setup.prototype._build = function() {
 	this._buildTips();
 }
 
-Game.Setup.prototype._buildTips = function() {
+Setup.prototype._buildTips = function() {
 	var tips = OZ.DOM.elm("div", {id:"tips"});
 	var handle = OZ.DOM.elm("h2", {innerHTML:"gameplay&nbsp;tips"});
 	var content = OZ.DOM.elm("ul");
@@ -108,20 +109,20 @@ Game.Setup.prototype._buildTips = function() {
 	);
 }
 
-Game.Setup.prototype._buildButton = function(innerHTML, cb) {
+Setup.prototype._buildButton = function(innerHTML, cb) {
 	var button = OZ.DOM.elm("button");
 	button.innerHTML = innerHTML;
 	OZ.Event.add(button, "click", cb.bind(this));
 	return button;
 }
 
-Game.Setup.prototype._buildSet = function(buttons) {
+Setup.prototype._buildSet = function(buttons) {
 	var set = OZ.DOM.elm("div", {className:"button-set"});
 	for (var i=0;i<buttons.length;i++) { set.appendChild(buttons[i]); }
 	return set;
 }
 
-Game.Setup.prototype._activateButton = function(button) {
+Setup.prototype._activateButton = function(button) {
 	var buttons = button.parentNode.getElementsByTagName("button");
 	for (var i=0;i<buttons.length;i++) {
 		var b = buttons[i];
@@ -133,23 +134,23 @@ Game.Setup.prototype._activateButton = function(button) {
 	}
 }
 
-Game.Setup.prototype._clickSingle = function(e) {
+Setup.prototype._clickSingle = function(e) {
 	this._activateButton(this._dom.single);
 	OZ.DOM.clear(this._dom.variable);
 	this._dom.variable.appendChild(this._dom.singleDetails);
 }
 
-Game.Setup.prototype._clickMulti = function(e) {
+Setup.prototype._clickMulti = function(e) {
 	this._activateButton(this._dom.multi);
 	OZ.DOM.clear(this._dom.variable);
 	this._dom.variable.appendChild(this._dom.multiDetails);
 }
 
-Game.Setup.prototype._changeColor = function(e) {
+Setup.prototype._changeColor = function(e) {
 	this._selectColor(OZ.Event.target(e).value);
 }
 
-Game.Setup.prototype._selectColor = function(color) {
+Setup.prototype._selectColor = function(color) {
 	this._dom.color.value = color;
 	this._shipColor = color;
 	
@@ -159,7 +160,7 @@ Game.Setup.prototype._selectColor = function(color) {
 	}
 }
 
-Game.Setup.prototype._clickShip = function(e) {
+Setup.prototype._clickShip = function(e) {
 	var button = OZ.Event.target(e);
 	while (button.tagName.toLowerCase() != "button") { button = button.parentNode; }
 	var buttons = button.parentNode.getElementsByTagName("button");
@@ -168,13 +169,13 @@ Game.Setup.prototype._clickShip = function(e) {
 	}
 }
 
-Game.Setup.prototype._selectShip = function(index) {
+Setup.prototype._selectShip = function(index) {
 	var buttons = this._dom.ships.getElementsByTagName("button");
 	this._activateButton(buttons[index]);
 	this._ship = index;
 }
 
-Game.Setup.prototype._play = function(e) {
+Setup.prototype._play = function(e) {
 	OZ.DOM.clear(document.body);
 	var game = null;
 	var name = this._dom.name.value;
