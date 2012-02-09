@@ -93,7 +93,7 @@ Setup.prototype._buildTips = function() {
 	var list = [
 		"Use arrow keys to control your ship; hold Ctrl to shoot",
 		"Reduce browser window size to increase frame rate",
-		"Ship's color and shape has no effect on its performance",
+		"Ship's color and size has no effect on its performance",
 		"In order to play multiplayer, your browser must support Web Sockets (Firefox, Chrome)",
 		"Audio does not work well in Firefox/Linux, but other combinations are okay - put on your headphones!",
 		"Graphic sprites are &copy;&nbsp;Elemental Games",
