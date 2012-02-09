@@ -7,14 +7,18 @@ Game.Server.prototype.init = function(ws, options) {
 	Game.prototype.init.call(this);
 	
 	this._options = {
-		idle: 500
+		idle: 500,
+		stats: 5000
 	}
 	for (var p in options) { this._options[p] = options[p]; }
 	
 	OZ.Event.add(null, "ship-death", this._shipDeath.bind(this));
 	this._ws = ws;
 	this._ws.setDebug(false);
-	this._ts = 0; /* last idle notification */
+	this._ts = { /* last notifications */
+		idle: 0,
+		stats: 0
+	}; 
 	
 	this._clients = [];
 	this._clientPlayers = [];
@@ -24,7 +28,8 @@ Game.Server.prototype.init = function(ws, options) {
 
 Game.Server.prototype.start = function() {
 	Game.prototype.start.call(this);
-	this._ts = Date.now();
+	this._ts.idle = Date.now();
+	this._ts.stats = Date.now();
 	this._ws.run();
 }
 
@@ -158,8 +163,8 @@ Game.Server.prototype.onidle = function() {
 	this._engine.tick();
 	var ts = Date.now();
 	
-	if (ts - this._ts > this._options.idle) { /* send sync info to all clients */
-		this._ts = ts;
+	if (ts - this._ts.idle > this._options.idle) { /* send sync info to all clients */
+		this._ts.idle = ts;
 		var state = this._getState();
 		var data = {
 			type: Game.MSG_SYNC,
@@ -171,6 +176,17 @@ Game.Server.prototype.onidle = function() {
 		}
 	}
 	
+	if (ts - this._ts.stats > this._options.stats) { /* show stats */
+		this._ts.stats = ts;
+		var players = 0;
+		var ships = 0;
+		for (var id in this._players) { 
+			players++; 
+			if (this._players[id].getShip()) { ships++; }
+		}
+		this._debug("[stats] " + players + " players, " + ships + " ships");
+	}
+
 }
 
 Game.Server.prototype._getState = function() {
