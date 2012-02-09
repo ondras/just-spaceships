@@ -73,8 +73,7 @@ Game.Multi.prototype._message = function(e) {
 					continue;
 				}
 				
-				var player = this._addPlayer(Player, playerData.name, id); 
-				player.setScore(playerData.score); 
+				var player = this._addPlayer(Player, playerData.name, id, playerData.score); 
 				player.setShipOptions(playerData.shipOptions); 
 			}
 		break;

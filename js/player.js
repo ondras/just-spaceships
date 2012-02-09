@@ -1,10 +1,10 @@
 var Player = OZ.Class();
 
-Player.prototype.init = function(game, name, id) {
+Player.prototype.init = function(game, name, id, score) {
 	this._game = game;
 	this._name = name;
 	this._id = id || Math.random().toString().replace(/\D/g, "");
-	this._score = 0;
+	this._score = score || 0;
 	this._ship = null;
 	this._shipOptions = {};
 
@@ -24,11 +24,6 @@ Player.prototype.createShip = function() {
 	if (this._ship) { return; }
 	this._ship = new Ship(this._game, this, this._shipOptions);
 	return this._ship;
-}
-
-Player.prototype.setScore = function(score) {
-	this._score = score; 
-	return this;
 }
 
 Player.prototype.getScore = function() {

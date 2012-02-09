@@ -68,8 +68,8 @@ Game.prototype._initEngine = function() {
 	this._engine.addLayer("map");
 }
 
-Game.prototype._addPlayer = function(ctor, name, id) {
-	var player = new ctor(this, name, id);
+Game.prototype._addPlayer = function(ctor, name, id, score) {
+	var player = new ctor(this, name, id, score);
 	this._players[player.getId()] = player;
 	this.dispatch("player-create");
 	return player;
