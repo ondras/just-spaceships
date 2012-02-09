@@ -11,11 +11,14 @@ Game.Setup.prototype.init = function() {
 	}
 	
 	this._selectColor(localStorage.color || Ship.random().color);
-	this._selectShip(localStorage.type === null ? 1 : localStorage.type);
+	this._selectShip(typeof(localStorage.type) == "string" ? localStorage.type : 1);
 }
 
 Game.Setup.prototype._build = function() {
 	var container = OZ.DOM.elm("div", {id:"setup"});
+	
+	var h1 = OZ.DOM.elm("h1", {innerHTML:"Just Spaceships!"});
+	container.appendChild(h1);
 	
 	var label = OZ.DOM.elm("label", {innerHTML:"Name: "});
 	this._dom.name = OZ.DOM.elm("input", {type:"text"});
@@ -62,8 +65,6 @@ Game.Setup.prototype._build = function() {
 	play.className = "play";
 	container.appendChild(play);
 
-	document.body.appendChild(container);
-	
 	this._dom.singleDetails = OZ.DOM.elm("div");
 	var label = OZ.DOM.elm("label", {innerHTML:"Enemies: "});
 	this._dom.enemies = OZ.DOM.elm("input", {type:"text", value:"3", size:"2"});
@@ -73,9 +74,37 @@ Game.Setup.prototype._build = function() {
 	this._dom.multiDetails = OZ.DOM.elm("div");
 	var label = OZ.DOM.elm("label", {innerHTML:"Server URL: "});
 	this._dom.url = OZ.DOM.elm("input", {type:"text"});
-	this._dom.url.value = localStorage.url || "ws://localhost:8888/space";
+	this._dom.url.value = localStorage.url || "ws://" + location.hostname + ":8888/space";
 	label.appendChild(this._dom.url);
 	this._dom.multiDetails.appendChild(label);
+
+
+	document.body.appendChild(container);
+	
+	this._buildTips();
+}
+
+Game.Setup.prototype._buildTips = function() {
+	var tips = OZ.DOM.elm("div", {id:"tips"});
+	var handle = OZ.DOM.elm("h2", {innerHTML:"gameplay&nbsp;tips"});
+	var content = OZ.DOM.elm("ul");
+	
+	var list = [
+		"Use arrow keys to control your ship; hold Ctrl to shoot",
+		"Reduce browser window size to increase frame rate",
+		"Ship's color and shape has no effect on its performance",
+		"In order to play multiplayer, your browser must support Web Sockets (Firefox, Chrome)",
+		"Graphic sprites are &copy;&nbsp;Elemental Games",
+		"This game was created by <a href='http://ondras.zarovi.cz/'>Ondřej Žára</a>",
+	];
+	
+	while (list.length) { content.appendChild(OZ.DOM.elm("li", {innerHTML:list.shift()})); }
+	
+	
+	OZ.DOM.append(
+		[tips, handle, content],
+		[document.body, tips]
+	);
 }
 
 Game.Setup.prototype._buildButton = function(innerHTML, cb) {
@@ -131,6 +160,7 @@ Game.Setup.prototype._selectColor = function(color) {
 
 Game.Setup.prototype._clickShip = function(e) {
 	var button = OZ.Event.target(e);
+	while (button.tagName.toLowerCase() != "button") { button = button.parentNode; }
 	var buttons = button.parentNode.getElementsByTagName("button");
 	for (var i=0;i<buttons.length;i++) {
 		if (button == buttons[i]) { this._selectShip(i); }

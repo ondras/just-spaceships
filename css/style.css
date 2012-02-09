@@ -36,7 +36,7 @@ body {
 
 #setup {
 	width: 600px;
-	margin: 2em auto;
+	margin: auto;
 	text-align: center;
 }
 
@@ -87,4 +87,71 @@ body {
 #setup button.play {
 	font-weight: bold;
 	font-size: 150%;
+}
+
+#tips {
+	cursor: help;
+	width: 300px;
+	position: fixed;
+	left: 0px;
+	top: 50px;
+	-webkit-transition: -webkit-transform 1s;
+	-moz-transition: -moz-transform 1s;
+	-ms-transition: -ms-transform 1s;
+	-o-transition: -o-transform 1s;
+	transition: transform 1s;
+
+	-webkit-transform: translate(-100%, 0);
+	-moz-transform: translate(-100%, 0);
+	-ms-transform: translate(-100%, 0);
+	-o-transform: translate(-100%, 0);
+	transform: translate(-100%, 0);
+}
+
+#tips h2 {
+	position: absolute;
+	left: 300px;
+	margin: 0px;
+	padding: 0.3em;
+	border-radius: 0px 0px 10px 10px;
+	font-size: 200%;
+	text-transform: uppercase;
+	-webkit-transform-origin: 0 0;
+	-moz-transform-origin: 0 0;
+	-ms-transform-origin: 0 0;
+	-o-transform-origin: 0 0;
+	transform-origin: 0 0;
+	
+	-webkit-transform: rotate(-90deg) translate(-100%, 0);
+	-moz-transform: rotate(-90deg) translate(-100%, 0);
+	-ms-transform: rotate(-90deg) translate(-100%, 0);
+	-o-transform: rotate(-90deg) translate(-100%, 0);
+	transform: rotate(-90deg) translate(-100%, 0);
+}
+
+#tips li {
+	margin: 1em;
+	
+}
+
+#tips:hover {
+	-webkit-transform: translate(0, 0);
+	-moz-transform: translate(0, 0);
+	-ms-transform: translate(0, 0);
+	-o-transform: translate(0, 0);
+	transform: translate(0, 0);
+}
+
+#tips ul {
+	margin: 0px;
+	padding: 1em;
+	border-radius: 0px 0px 10px 0px;
+}
+
+#tips h2, #tips ul {
+	background-color: rgba(80, 80, 80, 0.9);
+}
+
+#tips a {
+	color: #ccc;
 }
