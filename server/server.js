@@ -9,6 +9,7 @@ var nullElm = {
 	getContext: function() {}
 }
 var window = {};
+var location = {};
 var document = {
 	createElement: function() { return nullElm; }
 };
@@ -23,7 +24,11 @@ var scripts = html.match(/js\/.*?\.js/g);
 for (var i=0;i<scripts.length;i++) {
 	var f = new FS.File("../"+scripts[i]);
 	system.stdout.writeLine("Loading " + f);
-	eval(f.open("r").read().toString("utf-8"));
+	try {
+		eval(f.open("r").read().toString("utf-8"));
+	} catch (e) {
+		system.stdout.writeLine(e);
+	}
 }
 /* */
 
