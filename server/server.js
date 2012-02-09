@@ -35,5 +35,5 @@ for (var i=0;i<scripts.length;i++) {
 HAF.Engine.prototype.draw = function() {}
 
 var Server = require("websocket").Server;
-var ws = new Server("0.0.0.0", 8888);
+var ws = new Server(system.args[1] || "0.0.0.0", system.args[2] || 8888);
 new Game.Server(ws).start();
