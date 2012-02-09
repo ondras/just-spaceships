@@ -91,7 +91,7 @@ body {
 
 #tips {
 	cursor: help;
-	width: 300px;
+	width: 400px;
 	position: fixed;
 	left: 0px;
 	top: 50px;
@@ -110,7 +110,7 @@ body {
 
 #tips h2 {
 	position: absolute;
-	left: 300px;
+	left: 400px;
 	margin: 0px;
 	padding: 0.3em;
 	border-radius: 0px 0px 10px 10px;
