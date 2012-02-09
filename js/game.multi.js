@@ -158,14 +158,27 @@ Game.Multi.prototype._keyboardChange = function(e) {
  * Merge ship data with existing ship
  */
 Game.Multi.prototype._mergeShip = function(ship, data) {
+	var diff = 0;
+	
 	if (data.control) {
 		var control = ship.getControl();
 		for (var p in data.control) { control[p] = data.control[p]; }
 	}
 	if (data.phys) {
 		var phys = ship.getPhys();
-		for (var p in data.phys) { phys[p] = data.phys[p]; }
+		for (var p in data.phys) { 
+			/*
+			if (p == "position") {
+				var dx = data.phys[p][0] - phys[p][0];
+				var dy = data.phys[p][1] - phys[p][1];
+				diff += Math.sqrt(dx*dx+dy*dy);
+			}
+			*/
+			phys[p] = data.phys[p]; 
+		}
 	}
+	
+	if (diff) { console.info("Total position diff " + diff); }
 }
 
 Game.Multi.prototype._shipCreate = function(e) {

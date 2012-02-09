@@ -3,8 +3,13 @@
  */
 Game.Server = OZ.Class().extend(Game);
 Game.Server.prototype.path = "/space";
-Game.Server.prototype.init = function(ws) {
+Game.Server.prototype.init = function(ws, options) {
 	Game.prototype.init.call(this);
+	
+	this._options = {
+		idle: 500
+	}
+	for (var p in options) { this._options[p] = options[p]; }
 	
 	OZ.Event.add(null, "ship-death", this._shipDeath.bind(this));
 	this._ws = ws;
@@ -153,7 +158,7 @@ Game.Server.prototype.onidle = function() {
 	this._engine.tick();
 	var ts = Date.now();
 	
-	if (ts - this._ts > 500) { /* FIXME constant */ /* send sync info to all clients */
+	if (ts - this._ts > this._options.idle) { /* send sync info to all clients */
 		this._ts = ts;
 		var state = this._getState();
 		var data = {
