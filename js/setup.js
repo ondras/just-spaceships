@@ -91,7 +91,7 @@ Setup.prototype._buildTips = function() {
 	var content = OZ.DOM.elm("ul");
 	
 	var list = [
-		"Use arrow keys to control your ship; hold Ctrl to shoot",
+		"Use arrow keys to control your ship; hold Ctrl or Spacebar to shoot",
 		"Reduce browser window size to increase frame rate",
 		"Ship's color and size has no effect on its performance",
 		"In order to play multiplayer, your browser must support Web Sockets (Firefox, Chrome)",

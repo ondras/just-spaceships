@@ -15,6 +15,7 @@ Keyboard.prototype._keydown = function(e) {
 
 	switch (e.keyCode) {
 		case 17:
+		case 32:
 			this._control.fire = true;
 		break;
 		case 37:
@@ -42,6 +43,7 @@ Keyboard.prototype._keyup = function(e) {
 
 	switch (e.keyCode) {
 		case 17:
+		case 32:
 			this._control.fire = false;
 		break;
 		
