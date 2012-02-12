@@ -1,15 +1,23 @@
 var Weapon = OZ.Class();
 
-Weapon.prototype.init = function(game, ship) {
+Weapon.prototype.init = function(game, ship, type) {
 	this._game = game;
 	this._ship = ship;
 	this._speed = 1000;
 	this._ts = 0; /* timestamp of last shot */
 	this._delay = 200;
+	this._type = type;
+	
+	var ranges = [800, 600, 1000];
+	this._range = ranges[this._type];
+	var damages = [50, 70, 30];
+	this._damage = damages[this._type];
+	var colors = ["white", "red", "yellow"];
+	this._color = colors[this._type];
 }
 
 Weapon.prototype.getRange = function() {
-	return 800;
+	return this._range;
 }
 
 Weapon.prototype.getShip = function() {
@@ -17,7 +25,7 @@ Weapon.prototype.getShip = function() {
 }
 
 Weapon.prototype.getDamage = function() {
-	return 50;
+	return this._damage;
 }
 
 Weapon.prototype.isReady = function() {
@@ -40,5 +48,5 @@ Weapon.prototype.fire = function(position) {
 	v[0] = k*v[0] + this._speed * Math.cos(o);
 	v[1] = k*v[1] + this._speed * Math.sin(o);
 	
-	return new Weapon.Projectile(this._game, this, position, v);
+	return new Weapon.Projectile(this._game, this, position, v, this._color);
 }

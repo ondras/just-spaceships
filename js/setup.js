@@ -12,6 +12,7 @@ Setup.prototype.init = function() {
 	}
 	
 	this._selectColor(localStorage.color || Ship.random().color);
+	this._selectWeapon(localStorage.weapon || Math.floor(Math.random()*3));
 	this._selectShip(typeof(localStorage.type) == "string" ? localStorage.type : 1);
 }
 
@@ -47,6 +48,17 @@ Setup.prototype._build = function() {
 	}
 	OZ.Event.add(this._dom.color, "change", this._changeColor.bind(this));
 	label.appendChild(this._dom.color);
+	container.appendChild(label);
+
+	var label = OZ.DOM.elm("label", {innerHTML:"Weapon: "});
+	this._dom.weapon = OZ.DOM.elm("select");
+	var weapons = ["Normal", "More damage", "More range"];
+	for (var i=0;i<weapons.length;i++) {
+		var w = weapons[i];
+		var o = OZ.DOM.elm("option", {value:i, innerHTML:w});
+		this._dom.weapon.appendChild(o);
+	}
+	label.appendChild(this._dom.weapon);
 	container.appendChild(label);
 
 	var labels = ["More maneuverable", "Normal", "More hitpoints"];
@@ -160,6 +172,10 @@ Setup.prototype._selectColor = function(color) {
 	}
 }
 
+Setup.prototype._selectWeapon = function(weapon) {
+	this._dom.weapon.value = weapon;
+}
+
 Setup.prototype._clickShip = function(e) {
 	var button = OZ.Event.target(e);
 	while (button.tagName.toLowerCase() != "button") { button = button.parentNode; }
@@ -180,12 +196,14 @@ Setup.prototype._play = function(e) {
 	var game = null;
 	var name = this._dom.name.value;
 	var ship = {
-		color:this._dom.color.value,
-		type:this._ship
+		color: this._dom.color.value,
+		type: this._ship,
+		weaponType: parseInt(this._dom.weapon.value)
 	};
 	localStorage.name = name;
 	localStorage.color = ship.color;
 	localStorage.type = ship.type;
+	localStorage.weapon = ship.weaponType;
 	
 	if (OZ.DOM.hasClass(this._dom.single, "active")) {
 		var enemies = parseInt(this._dom.enemies.value) || 3;

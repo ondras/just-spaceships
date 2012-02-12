@@ -40,6 +40,10 @@ body {
 	text-align: center;
 }
 
+#setup label {
+	margin-left: 1em;
+}
+
 #setup button {
 	margin: 0px;
 	padding: 1em;

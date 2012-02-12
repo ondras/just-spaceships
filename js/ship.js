@@ -67,6 +67,7 @@ Ship.prototype.init = function(game, player, options) {
 		color: "yellow",
 		type: 1,
 		size: [64, 64],
+		weaponType: 0,
 		maxForce: 600, /* pixels per weight per second^2 in vacuum */
 		maxTorque: 200 * Math.PI/180, /* degrees per second */
 		mass: null,
@@ -89,7 +90,7 @@ Ship.prototype.init = function(game, player, options) {
 	this._deathTime = 0;
 	this._alive = true;
 	this._hp = 0;
-	this._weapon = new Weapon(this._game, this);	
+	this._weapon = new Weapon(this._game, this, this._options.weaponType);	
 	this._control = {
 		engine: 0, /* -1 = full back, 1 = full forward */
 		torque: {

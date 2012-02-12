@@ -34,6 +34,7 @@ Game.Single.prototype._addRandomPlayer = function() {
 		Math.random()*this._size[0],
 		Math.random()*this._size[1]
 	];
+	opt.weaponType = Math.floor(Math.random()*3);
 	
 	var player = this._addPlayer(Player.AI, "AI #" + Math.round(100*Math.random()+1)).setShipOptions(opt);
 	player.createShip();
