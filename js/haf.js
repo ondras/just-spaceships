@@ -372,6 +372,10 @@ HAF.Sprite.prototype._getSourceImagePosition = function() {
 
 /**
  * Static image builder
+ * @param {string} url
+ * @param {int[]} size
+ * @param {int} rotation angle (degrees)
+ * @param {bool} cache cache it?
  */
 HAF.Sprite.get = function(url, size, rotation, cache) {
 	var item = null;
@@ -393,7 +397,10 @@ HAF.Sprite.get = function(url, size, rotation, cache) {
 	}
 	
 	if (!size) { return; } /* just pre-cache */
-	var key = size.join(",") + "," + (rotation % (2*Math.PI)) + "," + (cache ? 1 : 0);
+	
+	while (rotation < 0) { rotation += 360; }
+	while (rotation >= 360) { rotation -= 360; }
+	var key = size.join(",") + "," + rotation + "," + (cache ? 1 : 0);
 	if (item.versions[key]) { return item.versions[key]; } /* we already have this */
 	
 	item.versions[key] = OZ.DOM.elm("canvas", {width:size[0], height:size[1]});
@@ -410,11 +417,11 @@ HAF.Sprite._render = function(url, key) {
 	var canvas = item.versions[key];
 	var context = canvas.getContext("2d");
 	var parts = key.split(",");
-	var angle = parseFloat(parts[2]);
+	var angle = parseInt(parts[2]);
 	
 	if (angle) { /* add rotation if requested */
 		context.translate(canvas.width/2, canvas.height/2);
-		context.rotate(angle);
+		context.rotate(angle * Math.PI / 180);
 		context.translate(-canvas.width/2, -canvas.height/2);
 	}
 	

@@ -98,7 +98,7 @@ Game.Client.prototype._initDebug = function(chart) {
 	var monitor2 = new HAF.Monitor.Draw(this._engine, [220, 100], {textColor:"#888", chart:chart}).getContainer();
 	monitor2.style.position = "absolute";
 	monitor2.style.left = "0px";
-	monitor2.style.top = monitor1.offsetHeight + 1 + "px";
+	monitor2.style.top = monitor1.offsetHeight + "px";
 	document.body.appendChild(monitor2);
 }
 
