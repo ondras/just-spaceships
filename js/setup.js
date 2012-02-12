@@ -12,7 +12,7 @@ Setup.prototype.init = function() {
 	}
 	
 	this._selectColor(localStorage.color || Ship.random().color);
-	this._selectWeapon(localStorage.weapon || Math.floor(Math.random()*3));
+	this._selectWeapon(localStorage.weapon || 0);
 	this._selectShip(typeof(localStorage.type) == "string" ? localStorage.type : 1);
 }
 
