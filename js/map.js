@@ -3,7 +3,7 @@ var Map = OZ.Class().extend(HAF.Actor);
 Map.prototype.init = function(game, size) {
 	this._game = game;
 	this._size = size;
-	this._game.getEngine().addActor(this, "map");
+	this._game.getEngine().addActor(this, Game.LAYER_MAP);
 }
 
 Map.prototype.getSize = function() {

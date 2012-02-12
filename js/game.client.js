@@ -55,9 +55,10 @@ Game.Client.prototype.inPort = function(coords, distance) {
 Game.Client.prototype.setOffset = function(offset) {
 	this._offset[0] = offset[0].mod(this._size[0]);
 	this._offset[1] = offset[1].mod(this._size[1]);
-	this._engine.setDirty("bg");
-	this._engine.setDirty("ships");
-	this._engine.setDirty("map");
+	this._engine.setDirty(Game.LAYER_BG);
+	this._engine.setDirty(Game.LAYER_SHIPS);
+	this._engine.setDirty(Game.LAYER_FX);
+	this._engine.setDirty(Game.LAYER_MAP);
 }
 
 Game.Client.prototype._initEngine = function() {
@@ -84,7 +85,7 @@ Game.Client.prototype._resize = function() {
 	}
 
 	this._engine.setSize(this._port);
-	this._engine.setSize(this._map.getSize(), "map");
+	this._engine.setSize(this._map.getSize(), Game.LAYER_MAP);
 }
 
 Game.Client.prototype._initDebug = function(chart) {
@@ -97,7 +98,7 @@ Game.Client.prototype._initDebug = function(chart) {
 	var monitor2 = new HAF.Monitor.Draw(this._engine, [220, 100], {textColor:"#888", chart:chart}).getContainer();
 	monitor2.style.position = "absolute";
 	monitor2.style.left = "0px";
-	monitor2.style.top = monitor1.offsetHeight + "px";
+	monitor2.style.top = monitor1.offsetHeight + 1 + "px";
 	document.body.appendChild(monitor2);
 }
 

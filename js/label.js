@@ -17,14 +17,14 @@ Label.prototype.init = function(game, text, position, options) {
 	this._time = 0;
 	
 	
-	this._game.getEngine().addActor(this, "fx");
+	this._game.getEngine().addActor(this, Game.LAYER_FX);
 }
 
 Label.prototype.tick = function(dt) {
 	this._time += dt;
 	
 	if (this._time > this._options.time) {
-		this._game.getEngine().removeActor(this, "fx");
+		this._game.getEngine().removeActor(this, Game.LAYER_FX);
 		return true;
 	}
 	

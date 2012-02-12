@@ -13,7 +13,7 @@ Explosion.prototype.init = function(game, position) {
 	this._sprite.position = position;
 	this._animation.fps = 20;
 	
-	this._game.getEngine().addActor(this, "fx");
+	this._game.getEngine().addActor(this, Game.LAYER_FX);
 	
 	if (this._game.inPort(position, 100)) { Game.Audio.play("explosion"); }
 }
@@ -22,7 +22,7 @@ Explosion.prototype.tick = function(dt) {
 	var changed = HAF.AnimatedSprite.prototype.tick.call(this, dt);
 	if (this._animation.frame >= this._frames) {
 		changed = true;
-		this._game.getEngine().removeActor(this, "fx");
+		this._game.getEngine().removeActor(this, Game.LAYER_FX);
 	}
 	return changed;
 }

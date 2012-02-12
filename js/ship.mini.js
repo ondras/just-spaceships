@@ -5,7 +5,7 @@ Ship.Mini.prototype.init = function(game, color) {
 	this._size = this._game.getSize();
 	this._dirty = false;
 	this._position = [0, 0];
-	game.getEngine().addActor(this, "map");
+	game.getEngine().addActor(this, Game.LAYER_MAP);
 }
 
 Ship.Mini.prototype.setPosition = function(position) {
@@ -37,5 +37,5 @@ Ship.Mini.prototype.draw = function(context) {
 }
 
 Ship.Mini.prototype.die = function() {
-	this._game.getEngine().removeActor(this, "map");
+	this._game.getEngine().removeActor(this, Game.LAYER_MAP);
 }

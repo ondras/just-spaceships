@@ -109,7 +109,7 @@ Ship.prototype.init = function(game, player, options) {
 	this.setHP(Math.round(this._phys.mass*1000));
 	this._mini = new Ship.Mini(game, def.color);
 
-	game.getEngine().addActor(this, "ships");
+	game.getEngine().addActor(this, Game.LAYER_SHIPS);
 	this.dispatch("ship-create");
 }
 
@@ -169,7 +169,7 @@ Ship.prototype.draw = function(context) {
 		var dt = Date.now() - this._deathTime;
 		var limit = 2000; /* FIXME constant? */
 		if (dt > limit) {
-			this._game.getEngine().removeActor(this, "ships");
+			this._game.getEngine().removeActor(this, Game.LAYER_SHIPS);
 			context.globalAlpha = 0;
 			this.dispatch("ship-purge");
 		} else {

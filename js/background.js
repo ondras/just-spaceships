@@ -3,13 +3,27 @@ var Background = OZ.Class().extend(HAF.Actor);
 Background.prototype.init = function(game) {
 	this._game = game;
 	this._size = game.getSize();
-/*
+
 	this._canvas = OZ.DOM.elm("canvas", {width:this._size[0], height:this._size[1]});
 	
 	var context = this._canvas.getContext("2d");
+	
 	context.fillStyle = "#000";
 	context.fillRect(0, 0, this._size[0], this._size[1]);
 
+	/* starfield */
+	var colors = ["#fff", "#ddd", "#bbb", "#999"];
+	var sizes = [[1, 1], [2, 2]];
+	
+	for (var i=0;i<1e4;i++) {
+		var x = Math.random() * this._canvas.width;
+		var y = Math.random() * this._canvas.height;
+		var size = sizes.random();
+		context.fillStyle = colors.random();
+		context.fillRect(x, y, size[0], size[1]);
+	}
+	
+	/*	
 	context.strokeStyle = "#333";
 	context.beginPath();
 	for (var i=0;i<this._size[0];i+=100) { // vertical lines 
@@ -23,15 +37,14 @@ Background.prototype.init = function(game) {
 	context.stroke();
 	*/
 
-	this._game.getEngine().addActor(this, "bg");
-	
+	this._game.getEngine().addActor(this, Game.LAYER_BG);
 }
 
 Background.prototype.draw = function(context) {
 	
 	var port = this._game.getPort();
 	var offset = this._game.getOffset();
-/*
+
 	var lt = [0, 0];
 	var rb = [0, 0];
 	var mid1 = [0, 0];
@@ -75,8 +88,8 @@ Background.prototype.draw = function(context) {
 		mid2[0], mid2[1], w, h,
 		port[0]-w, port[1]-h, w, h
 	);
-	*/
 	
+	/*
 	var sx = Math.floor(offset[0]/100)*100;
 	var sy = Math.floor(offset[1]/100)*100;
 	var ex = Math.ceil((offset[0]+port[0])/100)*100;
@@ -96,5 +109,5 @@ Background.prototype.draw = function(context) {
 		context.lineTo(ex-offset[0], j-offset[1]+.5);
 	}
 	context.stroke();
-	
+	*/
 }

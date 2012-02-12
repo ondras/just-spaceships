@@ -17,7 +17,7 @@ Weapon.Projectile.prototype.init = function(game, weapon, position, velocity) {
 //	var image = HAF.Sprite.get("img/plasma3.png", size, 0, true);
 	HAF.Sprite.prototype.init.call(this, image, size);
 	
-	this._game.getEngine().addActor(this, "fx");
+	this._game.getEngine().addActor(this, Game.LAYER_FX);
 	
 	if (this._game.inPort(position, 0)) { Game.Audio.play("shot"); }
 }
@@ -40,7 +40,7 @@ Weapon.Projectile.prototype.tick = function(dt) {
 	
 	this._distance += Math.sqrt(dist);
 	if (this._distance >= this._weapon.getRange()) {
-		this._game.getEngine().removeActor(this, "fx");
+		this._game.getEngine().removeActor(this, Game.LAYER_FX);
 		changed = true;
 	} else { /* check targets */
 		var thisShip = this._weapon.getShip();
@@ -50,7 +50,7 @@ Weapon.Projectile.prototype.tick = function(dt) {
 			if (!ship || ship == thisShip) { continue; }
 			if (ship.collidesWith(this._phys.position)) {
 				ship.damage(this._weapon);
-				this._game.getEngine().removeActor(this, "fx");
+				this._game.getEngine().removeActor(this, Game.LAYER_FX);
 				changed = true;
 				break;
 			}

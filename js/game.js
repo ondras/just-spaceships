@@ -33,6 +33,11 @@ Game.MSG_CHANGE			= 3; /* ship params changed */
 Game.MSG_DESTROY_SHIP	= 4; /* player's ship destroyed */
 Game.MSG_DESTROY_PLAYER	= 5; /* player left game */
 
+Game.LAYER_BG			= "bg";
+Game.LAYER_SHIPS		= Game.LAYER_BG;
+Game.LAYER_FX			= Game.LAYER_SHIPS;
+Game.LAYER_MAP			= "map";
+
 Game.prototype.init = function(name) {
 	this._size = [3000, 3000];
 	this._players = {};
@@ -62,10 +67,10 @@ Game.prototype.inPort = function() {
 
 Game.prototype._initEngine = function() {
 	this._engine = new HAF.Engine(this._size);
-	this._engine.addLayer("bg");
-	this._engine.addLayer("ships");
-	this._engine.addLayer("fx");
-	this._engine.addLayer("map");
+	this._engine.addLayer(Game.LAYER_BG, {clear:false});
+	this._engine.addLayer(Game.LAYER_SHIPS);
+	this._engine.addLayer(Game.LAYER_FX);
+	this._engine.addLayer(Game.LAYER_MAP, {sync:false});
 }
 
 Game.prototype._addPlayer = function(ctor, name, id, score) {

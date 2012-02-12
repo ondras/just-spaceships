@@ -64,6 +64,7 @@ HAF.Engine.prototype.setSize = function(size, layerId) {
 		
 		for (var id in this._layers) {
 			var layer = this._layers[id];
+			if (!layer.sync) { continue; }
 			layer.canvas.width = this._size[0];
 			layer.canvas.height = this._size[1];
 			layer.dirty = true;
@@ -79,15 +80,31 @@ HAF.Engine.prototype.getContainer = function() {
 	return this._container;
 }
 
-HAF.Engine.prototype.addLayer = function(id) {
+/**
+ * @param {id} id Layer ID
+ * @param {object} [options]
+ * @param {bool} [options.clear] clear before each redraw?
+ * @param {bool} [options.sync] sync size with the main container?
+ */
+HAF.Engine.prototype.addLayer = function(id, options) {
+	if (id in this._layers) { return; }
+
 	var canvas = OZ.DOM.elm("canvas", {position:"absolute", className:id});
 	canvas.width = this._size[0];
 	canvas.height = this._size[1];
+	var o = {
+		clear: true,
+		sync: true
+	};
+	for (var p in options) { o[p] = options[p]; }
+	
 	var layer = {
 		canvas: canvas,
 		ctx: canvas.getContext("2d"),
 		id: id,
 		dirty: false,
+		clear: o.clear,
+		sync: o.sync,
 		actors: []
 	}
 	this._layers[id] = layer;
@@ -171,7 +188,7 @@ HAF.Engine.prototype.tick = function() {
  */
 HAF.Engine.prototype.draw = function() {
 	if (!this._running) { return; }
-	
+
 	this._schedule.call(window, this.draw); /* schedule next tick */
 	var ts1 = Date.now();
 	var dt = ts1 - this._ts.draw;
@@ -182,10 +199,12 @@ HAF.Engine.prototype.draw = function() {
 		if (!layer.dirty) { continue; }
 
 		/* at least one actor changed; redraw canvas */
+
 		layer.dirty = false;
 		var actors = layer.actors;
 		var i = actors.length; 
-		layer.ctx.clearRect(0, 0, layer.canvas.width, layer.canvas.height); /* clear canvas */
+		
+		if (layer.clear) { layer.ctx.clearRect(0, 0, layer.canvas.width, layer.canvas.height); } /* clear canvas */
 		while (i--) { actors[i].draw(layer.ctx); }
 	}
 	
