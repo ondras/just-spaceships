@@ -90,6 +90,10 @@ Ship.prototype.init = function(game, player, options) {
 	this._deathTime = 0;
 	this._alive = true;
 	this._hp = 0;
+	this._boxSize = [
+		this._sprite.size[0] + 8,
+		this._sprite.size[1] + 8
+	];
 	this._weapon = new Weapon(this._game, this, this._options.weaponType);	
 	this._control = {
 		engine: 0, /* -1 = full back, 1 = full forward */
@@ -151,6 +155,15 @@ Ship.prototype.tick = function(dt) {
 	if (this._alive && changed) { this._mini.setPosition(this._sprite.position); } /* update mini */
 
 	return changed;
+}
+
+Ship.prototype.getBox = function() {
+	var offset = this._game.getOffset();
+	var tmp = [0, 0];
+	for (var i=0;i<2;i++) {
+		tmp[i] = (this._sprite.position[i] - offset[i]).mod(this._size[i]) - this._sprite.size[i]/2 - 4;
+	}
+	return [tmp, this._boxSize];
 }
 
 Ship.prototype.draw = function(context) {

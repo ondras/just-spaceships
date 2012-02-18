@@ -71,3 +71,12 @@ Weapon.Projectile.prototype.draw = function(context) {
 	
 	context.drawImage(this._sprite.image, tmp[0]-this._sprite.size[0]/2, tmp[1]-this._sprite.size[1]/2);
 }
+
+Weapon.Projectile.prototype.getBox = function() {
+	var offset = this._game.getOffset();
+	var tmp = [0, 0];
+	for (var i=0;i<2;i++) {
+		tmp[i] = (this._sprite.position[i] - offset[i]).mod(this._size[i]) - this._sprite.size[i]/2;
+	}
+	return [tmp, this._sprite.size];
+}

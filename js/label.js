@@ -65,3 +65,14 @@ Label.prototype.draw = function(context) {
 	
 	context.drawImage(this._canvas, tmp[0], tmp[1]);
 }
+
+Label.prototype.getBox = function() {
+	var canvasSize = [this._canvas.width, this._canvas.height];
+	var offset = this._game.getOffset();
+	var tmp = [0, 0];
+	for (var i=0;i<2;i++) {
+		tmp[i] = (this._pxPosition[i] - offset[i]).mod(this._size[i]) - canvasSize[i]/2;
+	}
+	
+	return [tmp, canvasSize];
+}

@@ -41,3 +41,11 @@ Explosion.prototype.draw = function(context) {
 	);
 }
 
+Explosion.prototype.getBox = function() {
+	var offset = this._game.getOffset();
+	var tmp = [0, 0];
+	for (var i=0;i<2;i++) {
+		tmp[i] = (this._sprite.position[i] - offset[i]).mod(this._size[i]) - this._sprite.size[i]/2;
+	}
+	return [tmp, this._sprite.size];
+}
