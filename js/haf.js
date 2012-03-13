@@ -49,13 +49,15 @@ HAF.Engine.prototype.init = function(size,  options) {
 	}
 	
 	this._debugCanvas = OZ.DOM.elm("canvas", {width:"32", height:"32"});
-	var debugContext = this._debugCanvas.getContext("2d");
-	debugContext.fillStyle = "rgba(255, 255, 255, 0.2)";
-	debugContext.fillRect(0, 0, 16, 16);
-	debugContext.fillRect(16, 16, 16, 16);
-	debugContext.fillStyle = "rgba(150, 150, 150, 0.2)";
-	debugContext.fillRect(0, 16, 16, 16);
-	debugContext.fillRect(16, 0, 16, 16);
+	if (this._options.debug) {
+		var debugContext = this._debugCanvas.getContext("2d");
+		debugContext.fillStyle = "rgba(255, 255, 255, 0.2)";
+		debugContext.fillRect(0, 0, 16, 16);
+		debugContext.fillRect(16, 16, 16, 16);
+		debugContext.fillStyle = "rgba(150, 150, 150, 0.2)";
+		debugContext.fillRect(0, 16, 16, 16);
+		debugContext.fillRect(16, 0, 16, 16);
+	}
 }
 
 /**
@@ -122,7 +124,10 @@ HAF.Engine.prototype.addLayer = function(id, options) {
 		debugPattern: null,
 		actors: []
 	}
-	layer.debugPattern = layer.ctx.createPattern(this._debugCanvas, "repeat");
+	
+	if (this._options.debug) {
+		layer.debugPattern = layer.ctx.createPattern(this._debugCanvas, "repeat");
+	}
 	this._layers[id] = layer;
 	this._container.appendChild(canvas);
 
