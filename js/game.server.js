@@ -30,7 +30,6 @@ Game.Server.prototype.start = function() {
 	Game.prototype.start.call(this);
 	this._ts.idle = Date.now();
 	this._ts.stats = Date.now();
-	this._ws.run();
 }
 
 Game.Server.prototype.onconnect = function(client, headers) {
