@@ -87,7 +87,7 @@ Setup.prototype._build = function() {
 	this._dom.multiDetails = OZ.DOM.elm("div");
 	var label = OZ.DOM.elm("label", {innerHTML:"Server URL: "});
 	this._dom.url = OZ.DOM.elm("input", {type:"text"});
-	this._dom.url.value = localStorage.url || this.constructor.URL;
+	this._dom.url.value = this.constructor.URL;
 	label.appendChild(this._dom.url);
 	this._dom.multiDetails.appendChild(label);
 
