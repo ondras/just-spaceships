@@ -9,6 +9,6 @@
     "node-static": "*"
   },
   "scripts": {
-    "start": "node app"
+    "start": "node server/node-server"
   }
 }
