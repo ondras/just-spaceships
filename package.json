@@ -1,0 +1,14 @@
+{
+  "name": "just_spaceships",
+  "version": "0.1.0",
+  "engines": {
+    "node": "0.8.12"
+  },
+  "dependencies": {
+    "websocket": "1.0.7",
+    "node-static": "*"
+  },
+  "scripts": {
+    "start": "node app"
+  }
+}
