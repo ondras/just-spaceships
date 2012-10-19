@@ -97,6 +97,7 @@ Ship.prototype.init = function(game, player, options) {
 	this._weapon = new Weapon(this._game, this, this._options.weaponType);	
 	this._control = {
 		engine: 0, /* -1 = full back, 1 = full forward */
+		engine2: 0, /* -1 = velocity left, 1 = velocity right */
 		torque: {
 			mode: 0, /* 0 = nothing, 1 = target angle, 2 = forever */
 			target: 0 /* angle or +- 1 for mode = 2 */
@@ -303,6 +304,16 @@ Ship.prototype._tickMovement = function(dt) {
 			force *= (i ? Math.sin : Math.cos)(this._phys.orientation);
 			this._phys.velocity[i] += force * dt / this._phys.mass;
 		}
+
+		// velocity left or velocity right
+		if (this._control.engine2 && this._alive) {
+			var force = (this._control.engine2 > 0 ? 1 : 0.75) * this._options.maxForce * this._control.engine2;
+			force *= (i ? Math.cos : Math.sin)(this._phys.orientation);
+			force *= (i ? 1 : -1);
+			// (this._control.value > 0 ? 1 : -1) * 10;
+			this._phys.velocity[i] += force * dt / this._phys.mass;
+		}
+
 		
 		/* drag => decay of velocity */ 
 		this._phys.velocity[i] -= this._phys.velocity[i] * Math.min(1, dt * this._phys.decay / this._phys.mass);
