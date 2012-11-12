@@ -1,17 +1,20 @@
 Game.Audio = {
 	_maxConcurentAudio: 5,
-	_concurentAudio: 0,
+	_liveAudiosCache: {},
 	_supported: !!window.Audio && !(navigator.userAgent.match(/linux/i) && navigator.userAgent.match(/firefox/i)),
 	play: function(name) {
 		if (!this._supported) { return; }
-		if (this._maxConcurentAudio < this._concurentAudio) { return; }
+		if (this._liveAudiosCache[name] && this._liveAudiosCache[name] > this._maxConcurentAudio) { return; }
 
+		if (!this._liveAudiosCache[name])
+			this._liveAudiosCache[name] = 0;
+		
 		var a = new Audio();
 		var ext = (a.canPlayType("audio/ogg") ? "ogg" : "mp3");
 		a.src = "sfx/" + name + "." + ext;
-		a.addEventListener('ended', (function() { this._concurentAudio--; }).bind(this));
+		a.addEventListener('ended', (function() { this._liveAudiosCache[name]--; }).bind(this));
 		a.play();
 
-		this._concurentAudio++;
+		this._liveAudiosCache[name]++;
 	}
 }
