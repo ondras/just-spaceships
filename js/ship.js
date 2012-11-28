@@ -63,6 +63,9 @@ Ship.prototype.init = function(game, player, options) {
 	this._player = player;
 	this._size = game.getSize();
 
+	var randomX = Math.floor(Math.random() * (this._size[0] - 1) + 1);
+	var randomY = Math.floor(Math.random() * (this._size[1] - 1) + 1);
+
 	this._options = {
 		color: "yellow",
 		type: 1,
@@ -71,7 +74,7 @@ Ship.prototype.init = function(game, player, options) {
 		maxForce: 600, /* pixels per weight per second^2 in vacuum */
 		maxTorque: 200 * Math.PI/180, /* degrees per second */
 		mass: null,
-		position: [this._size[0]/2, this._size[1]/2]
+		position: [randomX, randomY]
 	};
 	for (var p in options) { this._options[p] = options[p]; }
 	

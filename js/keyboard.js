@@ -8,10 +8,20 @@ Keyboard.prototype.init = function() {
 
 Keyboard.prototype.setControl = function(control) {
 	this._control = control;
+
+	if (control == null)
+		activeKeys.splice(0, activeKeys.length);
 }
+
+var activeKeys = [];
 
 Keyboard.prototype._keydown = function(e) {
 	if (!this._control) { return; }
+
+	if (activeKeys.indexOf(e.keyCode) > -1) { return; }
+
+	activeKeys.push(e.keyCode);
+
 
 	switch (e.keyCode) {
 		case 17:
@@ -53,6 +63,12 @@ Keyboard.prototype._keydown = function(e) {
 
 Keyboard.prototype._keyup = function(e) {
 	if (!this._control) { return; }
+
+	var index = activeKeys.indexOf(e.keyCode);
+	if (index == -1) { return; }
+
+	activeKeys.splice(index, 1);
+
 
 	switch (e.keyCode) {
 		case 17:
