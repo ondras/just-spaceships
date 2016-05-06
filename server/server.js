@@ -1,8 +1,5 @@
-var FS = require("fs");
-var BASE = module.id.split("/");
-BASE.pop();
-BASE.pop();
-BASE = BASE.join("/");
+var fs = require('fs')
+var base = __dirname + "/..";
 
 exports.init = function(ws) {
 	/* mininal DOM environment */
@@ -20,17 +17,16 @@ exports.init = function(ws) {
 	global.setTimeout = function() {};
 
 	/* read all javascript files */
-	var index = new FS.File(BASE + "/index.html").open("r");
-	var html = index.read().toString("utf-8");
-	index.close();
+	var html = fs.readFileSync(base + "/index.html", "utf-8");
 	var scripts = html.match(/js\/.*?\.js/g);
 	for (var i=0;i<scripts.length;i++) {
-		var f = new FS.File(BASE + "/"+scripts[i]);
-		system.stdout.writeLine("Loading " + f);
+		var f = base + "/" + scripts[i];;
+		console.log("Loading", f);
 		try {
-			eval(f.open("r").read().toString("utf-8"));
+			var str = fs.readFileSync(f, "utf-8");
+			eval(str);
 		} catch (e) {
-			system.stdout.writeLine(e);
+			console.log(e);
 		}
 	}
 	/* */

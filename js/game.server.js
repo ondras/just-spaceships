@@ -258,5 +258,5 @@ Game.Server.prototype._removePlayer = function(id) {
 }
 
 Game.Server.prototype._debug = function(str) {
-	system.stdout.writeLine(str);
+	console.log(str);
 }
