@@ -1,7 +1,7 @@
 Game.Audio = {
 	_maxConcurentAudio: 5,
 	_liveAudiosCache: {},
-	_supported: !!window.Audio && !(navigator.userAgent.match(/linux/i) && navigator.userAgent.match(/firefox/i)),
+	_supported: !!window.Audio,
 	play: function(name) {
 		if (!this._supported) { return; }
 		if (this._liveAudiosCache[name] && this._liveAudiosCache[name] > this._maxConcurentAudio) { return; }
